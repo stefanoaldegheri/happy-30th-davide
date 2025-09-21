@@ -23,6 +23,15 @@ This application guides a user through a series of puzzles to unlock a final, hi
    npm run build
    ```
 
+4. Run end-to-end tests (requires MCP server Playwright tool):
+   ```
+   # Ask user to start the development server first
+   npm start
+   # Then run the tests
+   npm run test:e2e
+   # Ask user to stop the development server after tests
+   ```
+
 ## Features
 
 - **QR Code Entry**: The experience is initiated by scanning a physical QR code inside a book

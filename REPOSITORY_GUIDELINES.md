@@ -51,3 +51,25 @@ The following are particularly important:
 2. Never commit sensitive information like API keys or passwords
 3. Always ensure the project can be built and run from a clean clone
 4. Use meaningful commit messages following the Conventional Commits specification
+
+## Testing Guidelines
+
+### Unit Testing
+- Use Jest for unit testing
+- Run tests with `npm test`
+- Maintain 85% code coverage
+
+### End-to-End Testing
+- Use Playwright with the MCP server tool for end-to-end testing
+- Before running e2e tests, ask the user to start the development server:
+  ```
+  npm start
+  ```
+- Run e2e tests with:
+  ```
+  npm run test:e2e
+  ```
+- After tests complete, ask the user to stop the development server
+- For automated testing, use the provided scripts:
+  - `run-e2e-tests.bat` for Windows
+  - `run-e2e-tests.ps1` for PowerShell

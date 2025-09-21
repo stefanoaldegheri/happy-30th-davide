@@ -18,10 +18,9 @@ module.exports = {
     }
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!chess.js|chessboardjsx|tesseract.js|@react-leaflet|react-leaflet)'
+    '/node_modules/(?!chess.js/)'
   ],
   transform: {
-    '^.+\\.(js|jsx)$': 'babel-jest',
-    'node_modules/chess.js/.+\\.(j|t)sx?$': 'babel-jest'
+    '^.+\\.(js|jsx)$': 'babel-jest'
   }
 };

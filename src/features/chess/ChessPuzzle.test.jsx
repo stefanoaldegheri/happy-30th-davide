@@ -5,7 +5,8 @@ import ChessPuzzle from './ChessPuzzle';
 
 // Mock the chessboard component since it uses DOM APIs not available in Jest
 jest.mock('chessboardjsx', () => ({
-  Chessboard: () => <div data-testid="chessboard">Chessboard</div>
+  __esModule: true,
+  default: () => <div data-testid="chessboard">Chessboard</div>
 }));
 
 test('renders chess puzzle with instructions', () => {

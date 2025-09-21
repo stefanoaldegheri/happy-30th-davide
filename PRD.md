@@ -121,4 +121,4 @@ This separation of concerns ensures that the complex puzzle logic is decoupled f
         4.  `Ne2+` (White) `Kf3` (Black)
         5.  `Nd4+` (White) `Kf4` (Black)
         6.  `Bg3#` (White Checkmate)
-    *   **Final Position (FEN):** `7r/8/4R3/3P2p1/3k4/q5B1/1p2N2P/6K1 b - - 1 6`
+    *   **Final Position (FEN):** `7r/8/4R3/3P2P1/3N1k2/q3p1BP/1p5P/6K1 b - - 6 6`

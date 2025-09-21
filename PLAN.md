@@ -1,5 +1,5 @@
 ---
-status: in_progress
+status: blocked
 ---
 
 # Project Plan: Interactive Gift Application

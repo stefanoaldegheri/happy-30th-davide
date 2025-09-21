@@ -78,3 +78,8 @@ To use this interactive gift application, you'll need:
 ### Offline Usage
 - Once loaded, the application can work offline
 - However, the initial load requires an internet connection
+
+### Testing
+- Unit tests are run with Jest
+- End-to-end tests are run with Playwright using the MCP server tool
+- For end-to-end testing, the development server must be started and stopped manually

@@ -85,42 +85,27 @@ A multi-layered, automated testing strategy is mandatory to ensure application q
 
 ## 3.4. Mandatory Testing Instructions for Pure Frontend Applications
 
-When performing end-to-end testing on a React frontend application using Playwright, the agent MUST follow these precise steps to avoid the server process blocking the test execution:
+When performing end-to-end testing on a React frontend application, the agent MUST use the MCP server Playwright tool. The agent will ask the user to start or stop the server as needed and then execute the tests:
 
-1.  **Define Environment:**
-    -   Set the development server host to 127.0.0.1.
-    -   Set the development server port to 23000 (default React apps port 3000 shifted to 20000+ range).
-    -   Define the server log file as dev_server.log.
-    -   Specify the server startup command: npm start.
+1.  **Using MCP Server Playwright Tool:**
+    -   The agent MUST use the MCP server Playwright tool for all end-to-end testing.
+    -   Before running tests, the agent MUST ask the user to start the development server.
+    -   After tests are completed, the agent MUST ask the user to stop the development server.
 
-2.  **Ensure a Clean Slate:**
-    -   Before launching the server, forcefully terminate any process that is currently using the specified port to prevent 'address already in use' errors.
-    -   Use the taskkill (Windows) or pkill (Unix-like) command for this.
-    -   Example for Windows: `for /f "tokens=5" %a in ('netstat -aon ^| findstr :23000') do taskkill /PID %a /F`
-    -   Example for Unix-like systems: `lsof -ti:23000 | xargs kill -9`
+2.  **Server Management:**
+    -   The development server MUST run on host 127.0.0.1 and port 23000.
+    -   The agent MUST verify the server is running before executing tests.
+    -   The agent MUST ensure the server is properly shut down after testing.
 
-3.  **Launch the Server Detached:**
-    -   Start the development server in a background process so that it does not block the subsequent commands.
-    -   Redirect all standard output and standard error from the server to the designated log file for later inspection.
-    -   Example for Windows: `start /b npm start > dev_server.log 2>&1`
-    -   Example for Unix-like systems: `nohup npm start > dev_server.log 2>&1 &`
-
-4.  **Wait for the Server to be Ready:**
-    -   After launching the server, it's essential to wait until it is fully initialized and ready to accept connections before starting the tests.
-    -   Implement a waiting mechanism that periodically checks if the server is responsive by sending HTTP requests to the root URL (e.g., http://127.0.0.1:23000) until a successful response (like a 2xx or 3xx status code) is received.
-
-5.  **Execute Frontend Tests:**
+3.  **Test Execution:**
     -   Once the server is confirmed to be running, execute the Playwright tests against the React frontend.
     -   Example command: npx playwright test.
 
-6.  **Provide a Consolidated Script:**
-    -   Combine all the above steps into a single shell script for easy execution.
-    -   The script should:
-        -   Kill the old server.
-        -   Start the new server in the background.
-        -   Wait for the server to be ready.
-        -   Run the Playwright tests.
-    -   Include a final step in the script to shut down the development server after the tests have completed.
+4.  **Test Script Usage:**
+    -   For automated testing, the project provides scripts that follow the MCP server Playwright tool approach:
+        -   `run-e2e-tests.bat` for Windows environments
+        -   `run-e2e-tests.ps1` for PowerShell environments
+    -   These scripts handle server management and test execution in a single command.
 
 ## 4. Documentation and Project Management
 

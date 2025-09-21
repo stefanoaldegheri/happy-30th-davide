@@ -35,6 +35,7 @@ The application follows a feature-based architecture where each feature is self-
 - **OCR Engine**: Tesseract.js
 - **Build Tool**: Webpack
 - **Package Manager**: npm
+- **Testing**: Jest for unit tests, Playwright with MCP server tool for end-to-end tests
 
 ## Data Flow
 

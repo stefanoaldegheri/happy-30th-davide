@@ -97,19 +97,19 @@ YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY`;
                     // Determine if this square should be filled (piece position)
                     // Based on the final chess position in the PRD
                     const isFilled = 
-                      (rowIndex === 0 && colIndex === 0) ||  // Rook
-                      (rowIndex === 2 && colIndex === 2) ||  // Rook
-                      (rowIndex === 3 && colIndex === 5) ||  // Pawn
-                      (rowIndex === 4 && colIndex === 0) ||  // Knight
-                      (rowIndex === 5 && colIndex === 7) ||  // Pawn
-                      (rowIndex === 6 && colIndex === 2) ||  // King
-                      (rowIndex === 7 && colIndex === 1) ||  // Pawn
-                      (rowIndex === 8 && colIndex === 0) ||  // Queen
-                      (rowIndex === 8 && colIndex === 9) ||  // Pawn
-                      (rowIndex === 9 && colIndex === 2) ||  // Bishop
-                      (rowIndex === 10 && colIndex === 2) || // Knight
-                      (rowIndex === 11 && colIndex === 3) || // Pawn
-                      (rowIndex === 11 && colIndex === 8);   // Pawn
+                      (rowIndex === 0 && colIndex === 11) ||  // Black Rook
+                      (rowIndex === 2 && colIndex === 8) ||   // White Rook
+                      (rowIndex === 3 && colIndex === 7) ||   // White Pawn
+                      (rowIndex === 3 && colIndex === 10) ||  // White Pawn
+                      (rowIndex === 5 && colIndex === 4) ||   // Black Queen
+                      (rowIndex === 5 && colIndex === 8) ||   // Black Pawn
+                      (rowIndex === 5 && colIndex === 9) ||   // Black King
+                      (rowIndex === 5 && colIndex === 11) ||  // White Pawn
+                      (rowIndex === 6 && colIndex === 5) ||   // Black Pawn
+                      (rowIndex === 6 && colIndex === 8) ||   // White Knight
+                      (rowIndex === 6 && colIndex === 11) ||  // White Pawn
+                      (rowIndex === 7 && colIndex === 8) ||   // White Bishop
+                      (rowIndex === 7 && colIndex === 10);    // White King
                     
                     return (
                       <div 
