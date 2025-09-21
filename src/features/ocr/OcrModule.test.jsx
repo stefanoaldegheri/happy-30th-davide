@@ -24,3 +24,13 @@ test('renders OCR module with instructions', () => {
   expect(screen.getByText(/Text Recognition Challenge/i)).toBeInTheDocument();
   expect(screen.getByText(/Point your camera at the block of text/i)).toBeInTheDocument();
 });
+
+test('renders test button for OCR simulation', () => {
+  render(
+    <MemoryRouter>
+      <OcrModule />
+    </MemoryRouter>
+  );
+  
+  expect(screen.getByText(/Load Test Text \(Simulate OCR\)/i)).toBeInTheDocument();
+});

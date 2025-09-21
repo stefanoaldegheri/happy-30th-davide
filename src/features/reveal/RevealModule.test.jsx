@@ -11,5 +11,15 @@ test('renders reveal module with instructions', () => {
   );
   
   expect(screen.getByText(/Reveal the Secret/i)).toBeInTheDocument();
-  expect(screen.getByText(/Adjust the slider to reveal the hidden message/i)).toBeInTheDocument();
+  expect(screen.getByText(/Click the button to begin the reveal process/i)).toBeInTheDocument();
+});
+
+test('renders reveal button', () => {
+  render(
+    <MemoryRouter>
+      <RevealModule />
+    </MemoryRouter>
+  );
+  
+  expect(screen.getByText(/Reveal Hidden Letters/i)).toBeInTheDocument();
 });

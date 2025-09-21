@@ -23,6 +23,13 @@ STARTING THIS NEW CHAPTER IS HIGHLY EXCITING
 ERRORS ARE JUST A GREAT START TO A NEW SCRIPT
 YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY`;
   
+  // Test function to simulate OCR with the expected text
+  const loadTestText = () => {
+    setCapturedImage('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='); // Placeholder image
+    setOcrResult(expectedText);
+    setIsValid(true);
+  };
+  
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -132,6 +139,10 @@ YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY`;
           <div className="camera-setup">
             <button className="action-button" onClick={startCamera}>
               Start Camera
+            </button>
+            {/* Test button for development - loads the expected text directly */}
+            <button className="secondary-button" onClick={loadTestText} style={{ marginTop: '10px' }}>
+              Load Test Text (Simulate OCR)
             </button>
           </div>
         )}
