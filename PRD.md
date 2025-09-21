@@ -26,6 +26,7 @@ This document outlines the complete technical specification for a personalized, 
 *   **Chess Logic:** **`Chess.js`** - A powerful JavaScript library used to validate moves, manage game states, and handle all chess rules.
 *   **Chess UI:** **`Chessboard.js`** - A JavaScript library for rendering a responsive, interactive, and themeable chessboard UI with drag-and-drop functionality.
 *   **OCR Engine:** **`Tesseract.js`** - A JavaScript port of the Tesseract OCR engine that runs directly in the browser via WebAssembly, enabling client-side image-to-text conversion.
+*   **Testing:** Jest for unit testing, Playwright with MCP server tool for end-to-end testing
 
 ##### 3.2. Client-Side-Only Rationale
 
@@ -112,12 +113,12 @@ This separation of concerns ensures that the complex puzzle logic is decoupled f
 *   **Final Gift Page Content:** Hosted on the `regalo-segreto` repository. Content to be defined by the creator (e.g., personal message, photo gallery, embedded video).
 
 *   **Chess Puzzle Data:**
-    *   **Initial Position (FEN):** `7r/8/4R3/3P2p1/3N1k2/q3p1BP/1p4P1/6K1 w - - 0 1`
+    *   **Initial Position (FEN):** `7r/8/4R3/3P1kP1/5p1p/q6P/1p2P1PP/4BNK1 w - - 0 1`
     *   **Solution Sequence (White moves are user-input, Black moves are automated):**
         1.  `e4+` (White) `fxe3` (Black)
         2.  `g4+` (White) `hxg3` (Black)
         3.  `Nxg3+` (White) `Kf4` (Black)
         4.  `Ne2+` (White) `Kf3` (Black)
-        5.  `d4+` (White) `Kf4` (Black)
+        5.  `Nd4+` (White) `Kf4` (Black)
         6.  `Bg3#` (White Checkmate)
     *   **Final Position (FEN):** `7r/8/4R3/3P2p1/3k4/q5B1/1p2N2P/6K1 b - - 1 6`
