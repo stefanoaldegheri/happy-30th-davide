@@ -595,17 +595,12 @@ YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY`;
               return (
                 <div
                   key={colIndex}
-                  className={`chess-square ${(rowIndex + colIndex) % 2 === 0 ? 'light' : 'dark'} ${hasPiece ? 'has-piece' : 'empty-square'}`}
+                  className={`chess-square ${(rowIndex + colIndex) % 2 === 0 ? 'light' : 'dark'} ${hasPiece ? 'has-piece' : ''}`}
                   style={{ 
                     width: '30px',
                     height: '30px',
                     opacity: 1, // Always start with 100% opacity
                     transition: 'opacity 0.3s ease', // Faster transition for better responsiveness
-                    backgroundColor: hasPiece 
-                      ? 'rgba(100, 100, 100, 1.0)' // Fully opaque pieces
-                      : (rowIndex + colIndex) % 2 === 0 
-                        ? 'rgba(240, 240, 240, 1.0)' // Fully opaque light squares
-                        : 'rgba(200, 200, 200, 1.0)', // Fully opaque dark squares
                     position: 'absolute',
                     left: `${actualCol * 30}px` // Position each square at its correct column (30px to match character width)
                   }}
@@ -618,7 +613,7 @@ YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY`;
                       transform: 'translate(-50%, -50%)',
                       fontSize: '20px',
                       fontWeight: 'bold',
-                      color: 'white',
+                      color: position.piece.includes('white') ? 'black' : 'white',
                       textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
                     }}>
                       {position.piece.includes('king') ? '♔' : 
