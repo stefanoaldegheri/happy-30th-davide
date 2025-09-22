@@ -95,20 +95,20 @@ const EnhancedReveal = () => {
   const [ocrResult, setOcrResult] = useState('');
   
   // Static configuration for padding values
-  const paddingConfig = [0, 1, 2, 3, 4, 3, 2, 1];
+  const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
   
   // Chess filter column parameter (0-indexed)
-  const chessFilterColumn = 6;
+  const chessFilterColumn = 10;
   
   // Hardcoded message from OCR (as requested)
-  const originalText = `A NEW DECADE AWAITS AHEAD BE BOLD AND READY
-YOUR FUTURE IS CODE TO WRITE AND NEVER DEBUG
-LIFE IS A NEW CHALLENGE NOW ACCEPT THE QUEST
-SO DIVE INTO THE NEXT VERSION OF YOUR STORY
-AND DEBUG EVERY SINGLE ERROR ON YOUR JOURNEY
-STARTING THIS NEW CHAPTER IS HIGHLY EXCITING
-ERRORS ARE JUST A GREAT START TO A NEW SCRIPT
-YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY`;
+  const originalText = `DAVIDE, YOUR NEW ERA DAWNS.
+BUILD VALUE, CUT THE WASTE.
+ALWAYS AIM FOR THE TOP.
+A VIVID FUTURE AWAITS.
+INDEED, YOUR PATH IS SET.
+SEE, IT'S HIGH TIME FOR YOUR DREAMS.
+YOU ARE MEANT FOR THE GREATEST JOURNEY.
+I HOPE YOUR 30S ARE LEGENDARY!`;
   
   // Effect to get OCR result from sessionStorage
   useEffect(() => {

@@ -100,14 +100,14 @@ This separation of concerns ensures that the complex puzzle logic is decoupled f
 
 *   **Block of Text (to be written in the book):**
     ```
-    A NEW DECADE AWAITS AHEAD BE BOLD AND READY
-    YOUR FUTURE IS CODE TO WRITE AND NEVER DEBUG
-    LIFE IS A NEW CHALLENGE NOW ACCEPT THE QUEST
-    SO DIVE INTO THE NEXT VERSION OF YOUR STORY
-    AND DEBUG EVERY SINGLE ERROR ON YOUR JOURNEY
-    STARTING THIS NEW CHAPTER IS HIGHLY EXCITING
-    ERRORS ARE JUST A GREAT START TO A NEW SCRIPT
-    YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY
+    DAVIDE, YOUR NEW ERA DAWNS.
+    BUILD VALUE, CUT THE WASTE.
+    ALWAYS AIM FOR THE TOP.
+    A VIVID FUTURE AWAITS.
+    INDEED, YOUR PATH IS SET.
+    SEE, IT'S HIGH TIME FOR YOUR DREAMS.
+    YOU ARE MEANT FOR THE GREATEST JOURNEY.
+    I HOPE YOUR 30S ARE LEGENDARY!
     ```
 
 *   **Final Gift Page Content:** Hosted on the `regalo-segreto` repository. Content to be defined by the creator (e.g., personal message, photo gallery, embedded video).
