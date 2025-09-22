@@ -51,3 +51,35 @@
 .begin-button:active {
   transform: translateY(0);
 }
+
+/* Test Navigation Buttons */
+.test-navigation {
+  border-top: 1px dashed #ccc;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.test-navigation h3 {
+  color: #ff6b6b !important;
+  font-weight: bold;
+}
+
+.test-nav-button {
+  background: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.test-nav-button:hover {
+  background: #e9ecef !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.test-nav-button:active {
+  transform: translateY(0);
+}

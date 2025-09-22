@@ -117,6 +117,8 @@ YOU ARE THE MASTER OF YOUR WAY SO JUST ENJOY`;
   };
   
   const handleContinue = () => {
+    // Store the OCR result in sessionStorage to pass to the Reveal module
+    sessionStorage.setItem('ocrResult', ocrResult || expectedText);
     navigate('/reveal');
   };
   

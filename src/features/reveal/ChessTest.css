@@ -1,0 +1,56 @@
+.chess-test-container {
+  padding: 20px;
+  background: #f0f0f0;
+  font-family: Arial, sans-serif;
+}
+
+.pieces-list {
+  margin-bottom: 30px;
+}
+
+.pieces-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.pieces-list li {
+  background: #e0e0e0;
+  margin: 5px 0;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.chess-grid .grid {
+  display: inline-block;
+  border: 2px solid #333;
+}
+
+.chess-grid .row {
+  display: flex;
+}
+
+.square {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.square.light {
+  background-color: #f0d9b5;
+}
+
+.square.dark {
+  background-color: #b58863;
+}
+
+.square.has-piece {
+  position: relative;
+}
+
+.piece-symbol {
+  color: #000;
+}

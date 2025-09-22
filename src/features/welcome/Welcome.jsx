@@ -9,6 +9,23 @@ const Welcome = () => {
     navigate('/chess');
   };
 
+  // Navigation functions for testing
+  const navigateToChess = () => {
+    navigate('/chess');
+  };
+
+  const navigateToOcr = () => {
+    navigate('/ocr');
+  };
+
+  const navigateToReveal = () => {
+    navigate('/reveal');
+  };
+
+  const navigateToFinal = () => {
+    navigate('/final');
+  };
+
   return (
     <div className="welcome-container">
       <div className="welcome-card">
@@ -24,6 +41,69 @@ const Welcome = () => {
         <button className="begin-button" onClick={handleBegin}>
           Begin the Journey
         </button>
+        
+        {/* Test Navigation Buttons - Only for development/testing */}
+        <div className="test-navigation">
+          <h3 style={{ marginTop: '30px', color: '#666', fontSize: '1rem' }}>Testing Navigation (Skip puzzles):</h3>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '10px' }}>
+            <button 
+              className="test-nav-button" 
+              onClick={navigateToChess}
+              style={{
+                background: '#f0f0f0',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                padding: '8px 12px',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Chess Puzzle
+            </button>
+            <button 
+              className="test-nav-button" 
+              onClick={navigateToOcr}
+              style={{
+                background: '#f0f0f0',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                padding: '8px 12px',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              OCR Challenge
+            </button>
+            <button 
+              className="test-nav-button" 
+              onClick={navigateToReveal}
+              style={{
+                background: '#f0f0f0',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                padding: '8px 12px',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Reveal Secret
+            </button>
+            <button 
+              className="test-nav-button" 
+              onClick={navigateToFinal}
+              style={{
+                background: '#f0f0f0',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                padding: '8px 12px',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Final Gift
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
