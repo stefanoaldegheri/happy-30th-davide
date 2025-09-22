@@ -373,6 +373,48 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     return message;
   };
   
+  // Check if a grid position is under a chess piece
+  const isPositionUnderChessPiece = (textRow, textCol) => {
+    // Define the positions of pieces that spell "davidesthirty"
+    // Based on the key piece verification in final_verification.js
+    const piecePositions = [
+      'h8', // R (black rook)
+      'e6', // R (white rook)
+      'g1', // K (white king)
+      'd5', // P (white pawn)
+      'a3', // Q (black queen)
+      'b2', // P (black pawn)
+      'e3', // P (black pawn)
+      'd4', // N (white knight)
+      'f4', // K (black king)
+      'h3', // P (white pawn)
+      'g3', // B (white bishop)
+      'h2', // P (white pawn)
+      'g5' // P (white pawn)
+    ];
+    
+    // Check if the given text position matches any piece position
+    for (const notation of piecePositions) {
+      const position = chessPosition[notation];
+      if (position && !position.empty && position.piece) {
+        // Get the chess board coordinates for this piece
+        const { row: pieceRow, col: pieceCol } = chessNotationToCoords(notation);
+        
+        // Calculate the actual column position of the piece on the grid
+        // The chessboard is offset by chessFilterColumn
+        // Adjust by -1 to correct for column offset issue
+        const actualPieceCol = pieceCol + chessFilterColumn - 1;
+        
+        // Check if the text character position matches the piece position
+        if (textRow === pieceRow && textCol === actualPieceCol) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  };
+  
   // Handle slider change for chess overlay opacity (reversed: left=100%, right=0%)
   const handleOpacityChange = (e) => {
     // Reverse the value so left = 100% and right = 0%
@@ -389,6 +431,35 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           square.style.opacity = reversedValue / 100;
         }
         // Empty squares should remain fully opaque
+      });
+    }
+    
+    // Update the opacity and color of text characters
+    if (gridRef.current) {
+      const chars = gridRef.current.querySelectorAll('.grid-char');
+      chars.forEach(char => {
+        // Get the position of this character
+        const row = parseInt(char.dataset.currentRow);
+        const col = parseInt(char.dataset.currentCol);
+        
+        // Check if this character is under a chess piece
+        const isUnderPiece = isPositionUnderChessPiece(row, col);
+        
+        // Apply smooth transition for all characters
+        char.style.transition = 'opacity 0.3s ease, color 0.3s ease';
+        
+        // Red letters (under pieces) should stay fully opaque
+        // Other letters should fade as the slider moves left
+        if (isUnderPiece) {
+          char.style.opacity = 1; // Keep red letters fully visible
+          char.style.color = 'red';
+          char.style.fontWeight = 'bold';
+        } else {
+          // Other letters fade as the slider moves left
+          char.style.opacity = reversedValue / 100;
+          char.style.color = ''; // Reset to default color
+          char.style.fontWeight = ''; // Reset to default weight
+        }
       });
     }
     
