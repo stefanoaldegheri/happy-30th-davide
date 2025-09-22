@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import EnhancedReveal from './EnhancedReveal';
-import './RevealModule.css';
 
 const RevealModule = () => {
   const navigate = useNavigate();

@@ -98,7 +98,7 @@
 
 .grid-row {
   display: flex;
-  height: 34px;
+  height: 30px;
   position: relative;
 }
 
@@ -111,7 +111,6 @@
   font-family: 'Courier New', monospace;
   font-size: 1.2rem;
   font-weight: bold;
-  margin: 2px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -144,28 +143,31 @@
 
 .chess-row {
   display: flex;
-  height: 34px;
+  height: 30px;
 }
 
 .chess-square {
-  width: 34px;
-  height: 34px;
-  margin: 2px;
-  opacity: 1; /* Default to fully visible */
+  width: 30px;
+  height: 30px;
+  opacity: 1; /* Default to fully opaque */
   transition: opacity 0.3s ease; /* Faster transition */
   position: relative;
 }
 
 .chess-square.light {
-  background: rgba(240, 240, 240, 0.8);
+  background: rgba(240, 240, 240, 1.0); /* Fully opaque light squares */
 }
 
 .chess-square.dark {
-  background: rgba(200, 200, 200, 0.8);
+  background: rgba(200, 200, 200, 1.0); /* Fully opaque dark squares */
 }
 
 .chess-square.has-piece {
-  background: rgba(100, 100, 100, 0.9);
+  background: rgba(100, 100, 100, 1.0); /* Fully opaque pieces */
+}
+
+.chess-square.empty-square {
+  background: rgba(220, 220, 220, 1.0); /* Fully opaque empty squares */
 }
 
 .slider-container {
@@ -259,28 +261,15 @@
   margin-bottom: 20px;
 }
 
-.continue-button {
-  background: linear-gradient(45deg, #00ff99, #00cc7a);
-  color: #000;
-  border: none;
-  padding: 12px 30px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 255, 153, 0.3);
-  opacity: 0;
-  animation: fadeIn 1s ease 0.5s forwards;
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
 }
 
-.continue-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 255, 153, 0.5);
-}
-
-.continue-button:active {
-  transform: translateY(0);
+.navigation-buttons .continue-button {
+  margin: 0;
 }
 
 .chess-piece {

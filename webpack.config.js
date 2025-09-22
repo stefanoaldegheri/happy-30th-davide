@@ -43,7 +43,7 @@ module.exports = (env, argv) => {
         directory: path.join(__dirname, 'public'),
       },
       compress: true,
-      port: 23000,
+      port: 23001, // Changed from 23000 to 23001
       host: '127.0.0.1',
       historyApiFallback: true,
     },
