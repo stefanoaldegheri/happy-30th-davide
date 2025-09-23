@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ShipWheel.css';
 
-const ShipWheel = ({ onRotationChange, targetAngle }) => {
+const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }) => {
   const wheelRef = useRef(null);
   const [rotation, setRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -97,6 +97,12 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     
     setRotation(newRotation);
     setCurrentAngle(newRotation);
+    
+    // For step 5 (poneglyph alignment), call the alignment function
+    if (step === 5) {
+      onPoneglyphAlignment && onPoneglyphAlignment(newRotation);
+    }
+    
     checkTargetReached(newRotation);
     
     // Update last position
@@ -142,6 +148,12 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     
     setRotation(newRotation);
     setCurrentAngle(newRotation);
+    
+    // For step 5 (poneglyph alignment), call the alignment function
+    if (step === 5) {
+      onPoneglyphAlignment && onPoneglyphAlignment(newRotation);
+    }
+    
     checkTargetReached(newRotation);
     
     // Update last position
@@ -156,7 +168,14 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     if (isDragging) {
       // Check if target is reached when mouse is released
       if (checkTargetReached(rotation)) {
-        onRotationChange && onRotationChange(targetAngle);
+        // For step 5, if not at 0°, reset
+        if (step === 5 && Math.abs(rotation) > 5) {
+          // Reset wheel to 0° if not properly aligned
+          setRotation(0);
+          setCurrentAngle(0);
+        } else {
+          onRotationChange && onRotationChange(targetAngle);
+        }
       }
     }
     setIsDragging(false);
@@ -167,7 +186,14 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     if (isDragging) {
       // Check if target is reached when touch is released
       if (checkTargetReached(rotation)) {
-        onRotationChange && onRotationChange(targetAngle);
+        // For step 5, if not at 0°, reset
+        if (step === 5 && Math.abs(rotation) > 5) {
+          // Reset wheel to 0° if not properly aligned
+          setRotation(0);
+          setCurrentAngle(0);
+        } else {
+          onRotationChange && onRotationChange(targetAngle);
+        }
       }
     }
     setIsDragging(false);
@@ -188,24 +214,59 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isDragging, lastPosition, rotation, targetAngle]);
+  }, [isDragging, lastPosition, rotation, targetAngle, step, onPoneglyphAlignment]);
   
-  // Get instruction based on target angle
+  // Get instruction based on current step
   const getInstruction = () => {
-    switch (targetAngle) {
-      case 180:
-        return "Display text with fade in effect";
-      case 90:
-        return "Remove punctuation";
-      case 270:
-        return "Apply padding";
+    switch (step) {
       case 0:
-      case 360:
-        return "Show chessboard";
+        return "Rotate wheel to 180° to display text";
+      case 1:
+        return "Move to 90°: open treasure chest west and fade in text";
+      case 2:
+        return "Move to 270°: open treasure chest east and remove punctuation";
+      case 3:
+        return "Move to 180°: open treasure chest south and apply padding";
+      case 4:
+        return "Move to 0°: open treasure chest north and show chessboard";
+      case 5:
+        return "Align poneglyph: slide chessboard to target position";
+      case 6:
+        return "Apply opacity filter: from 100° (opacity 100) to 360° (full transparent)";
       default:
         return "Rotate wheel to target position";
     }
   };
+  
+  // Get target angle based on current step
+  const getTargetAngle = () => {
+    switch (step) {
+      case 0:
+        return 180;
+      case 1:
+        return 90;
+      case 2:
+        return 270;
+      case 3:
+        return 180;
+      case 4:
+        return 0;
+      case 5:
+        return 0; // For poneglyph alignment, target is to return to 0
+      case 6:
+        return 360;
+      default:
+        return targetAngle;
+    }
+  };
+  
+  // Update target when step changes
+  useEffect(() => {
+    const newTarget = getTargetAngle();
+    if (newTarget !== targetAngle) {
+      // This would require a callback to update parent state, but we'll use the calculated one directly
+    }
+  }, [step, targetAngle]);
   
   return (
     <div className="ship-wheel-container">
@@ -228,7 +289,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
         </div>
         <div className="ship-wheel-position">
           <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>
-          <p>Target Position: <span>{targetAngle}°</span></p>
+          <p>Target Position: <span>{getTargetAngle()}°</span></p>
         </div>
       </div>
     </div>
