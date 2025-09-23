@@ -20,9 +20,9 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     const normalizedTarget = normalizeAngle(targetAngle);
     
     // Check if we're close to the target angle (within 5 degrees)
-    const reached = Math.abs(normalizedAngle - normalizedTarget) < 5 || 
-                   Math.abs(normalizedAngle - (normalizedTarget + 360)) < 5 ||
-                   Math.abs(normalizedAngle - (normalizedTarget - 360)) < 5;
+    const diff = Math.abs(normalizedAngle - normalizedTarget);
+    const circularDiff = Math.min(diff, 360 - diff); // Handle 0-360 wrap-around
+    const reached = circularDiff < 5;
     
     setIsTargetReached(reached);
     return reached;
@@ -227,7 +227,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
           <p>{getInstruction()}</p>
         </div>
         <div className="ship-wheel-position">
-          <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(normalizeAngle(rotation))}°</span></p>
+          <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>
           <p>Target Position: <span>{targetAngle}°</span></p>
         </div>
       </div>
