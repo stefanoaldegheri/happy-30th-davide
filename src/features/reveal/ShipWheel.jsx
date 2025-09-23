@@ -166,20 +166,20 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   // Handle mouse up
   const handleMouseUp = () => {
     if (isDragging) {
-      // Check if target is reached when mouse is released
-      if (checkTargetReached(rotation)) {
-        // For step 5, if properly aligned (at 0°), proceed to next step
-        if (step === 5 && (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5)) {
-          onRotationChange && onRotationChange(rotation);
-        } else if (step !== 5) {
-          onRotationChange && onRotationChange(targetAngle);
+      // For step 5, check if aligned close to 0° or 360°
+      if (step === 5) {
+        if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
+          // If properly aligned, trigger the poneglyph action
+          onRotationChange && onRotationChange(0);
         } else {
-          // For step 5, if not at 0°, reset
-          if (Math.abs(rotation) > 5 && Math.abs(rotation - 360) > 5) {
-            // Reset wheel to initial state for step 5
-            setRotation(0);
-            setCurrentAngle(0);
-          }
+          // If not properly aligned, reset the rotation but don't change step
+          setRotation(0);
+          setCurrentAngle(0);
+        }
+      } else {
+        // For other steps, check if target is reached
+        if (checkTargetReached(rotation)) {
+          onRotationChange && onRotationChange(targetAngle);
         }
       }
     }
@@ -189,20 +189,20 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   // Handle touch end
   const handleTouchEnd = () => {
     if (isDragging) {
-      // Check if target is reached when touch is released
-      if (checkTargetReached(rotation)) {
-        // For step 5, if properly aligned (at 0°), proceed to next step
-        if (step === 5 && (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5)) {
-          onRotationChange && onRotationChange(rotation);
-        } else if (step !== 5) {
-          onRotationChange && onRotationChange(targetAngle);
+      // For step 5, check if aligned close to 0° or 360°
+      if (step === 5) {
+        if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
+          // If properly aligned, trigger the poneglyph action
+          onRotationChange && onRotationChange(0);
         } else {
-          // For step 5, if not at 0°, reset
-          if (Math.abs(rotation) > 5 && Math.abs(rotation - 360) > 5) {
-            // Reset wheel to initial state for step 5
-            setRotation(0);
-            setCurrentAngle(0);
-          }
+          // If not properly aligned, reset the rotation but don't change step
+          setRotation(0);
+          setCurrentAngle(0);
+        }
+      } else {
+        // For other steps, check if target is reached
+        if (checkTargetReached(rotation)) {
+          onRotationChange && onRotationChange(targetAngle);
         }
       }
     }

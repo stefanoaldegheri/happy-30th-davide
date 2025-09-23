@@ -576,12 +576,10 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             setTreasureOpened(false);
             setStep(6);
           }, 5000);
-        } else if (angle !== 0 && angle !== 360) {
-          // If releasing at different position, snap back
+        } else {
+          // If releasing at different position, snap back to initial position
           setChessBoardPosition({ left: 10, top: 60 }); // Reset to initial position
-          setTimeout(() => {
-            setStep(4); // Go back to step 4 to retry poneglyph alignment
-          }, 100);
+          // Don't change step, just reset the chessboard position
         }
         break;
       case 6:
