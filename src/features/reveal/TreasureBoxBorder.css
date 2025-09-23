@@ -1,0 +1,66 @@
+.treasure-box-border {
+  position: relative;
+  display: inline-block;
+  margin: 20px;
+}
+
+.treasure-box {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  z-index: 1;
+}
+
+.treasure-box.top-left {
+  top: -40px;
+  left: -40px;
+}
+
+.treasure-box.top-center {
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.treasure-box.top-right {
+  top: -40px;
+  right: -40px;
+}
+
+.treasure-box.middle-left {
+  top: 50%;
+  left: -40px;
+  transform: translateY(-50%);
+}
+
+.treasure-box.middle-right {
+  top: 50%;
+  right: -40px;
+  transform: translateY(-50%);
+}
+
+.treasure-box.bottom-left {
+  bottom: -40px;
+  left: -40px;
+}
+
+.treasure-box.bottom-center {
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.treasure-box.bottom-right {
+  bottom: -40px;
+  right: -40px;
+}
+
+.treasure-box-content {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

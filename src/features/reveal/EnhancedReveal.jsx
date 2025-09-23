@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
+import ShipWheel from './ShipWheel';
+import TreasureBoxBorder from './TreasureBoxBorder';
 import './EnhancedReveal.css';
 
 // Chess position data from the provided JSON
@@ -471,6 +473,62 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     }
   };
   
+  // Handle wheel rotation changes
+  const handleWheelRotation = (angle) => {
+    switch (angle) {
+      case 180:
+        // Display text with fade in effect
+        if (step < 1) {
+          setStep(1);
+        }
+        break;
+      case 90:
+        // Remove punctuation
+        if (step === 1) {
+          animateToCleanedText();
+          setTimeout(() => setStep(2), 2000);
+        }
+        break;
+      case 270:
+        // Apply padding
+        if (step === 2) {
+          animateToPaddedText();
+          setTimeout(() => setStep(3), 2000);
+        }
+        break;
+      case 0:
+      case 360:
+        // Show chessboard
+        if (step === 3) {
+          // Animate chess board dissolve effect
+          if (chessBoardRef.current) {
+            const squares = chessBoardRef.current.querySelectorAll('.chess-square');
+            squares.forEach((square, index) => {
+              // Only animate squares in the filter area (columns 6-13, rows 0-7)
+              const rowIndex = Math.floor(index / 8);
+              const colIndex = index % 8;
+              
+              if (rowIndex >= 0 && rowIndex <= 7 && colIndex >= 0 && colIndex <= 7) {
+                gsap.fromTo(square, 
+                  { opacity: 0 },
+                  { 
+                    opacity: 1,
+                    duration: 1,
+                    delay: (rowIndex * 0.1) + (colIndex * 0.05),
+                    ease: "power2.out"
+                  }
+                );
+              }
+            });
+          }
+          setStep(4);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+  
   // Render the text grid (unified function for all steps)
   const renderTextGrid = () => {
     // Get the base grid (original text)
@@ -709,132 +767,134 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     if (step < 1) return null;
     
     return (
-      <div className="step-all-transitions">
-        {/* Show step title based on current step */}
-        {step === 1 && <h2>Recognized Text</h2>}
-        {step === 2 && <h2>Removing Spaces and Punctuation</h2>}
-        {step === 3 && <h2>Applying Padding</h2>}
-        {step >= 4 && <h2>Chess Filter Overlay</h2>}
-        
-        <div style={{ 
-          position: 'relative', 
-          width: 'fit-content',
-          margin: '20px 0',
-          background: 'rgba(0, 0, 0, 0.3)',
-          borderRadius: '8px',
-          padding: '20px',
-          textAlign: 'left'
-        }}>
-          {/* Render the text grid - always visible and reusing same elements */}
+      <TreasureBoxBorder>
+        <div className="step-all-transitions">
+          {/* Show step title based on current step */}
+          {step === 1 && <h2>Recognized Text</h2>}
+          {step === 2 && <h2>Removing Spaces and Punctuation</h2>}
+          {step === 3 && <h2>Applying Padding</h2>}
+          {step >= 4 && <h2>Chess Filter Overlay</h2>}
+          
           <div style={{ 
             position: 'relative', 
             width: 'fit-content',
-            height: '240px'
+            margin: '20px 0',
+            background: 'rgba(0, 0, 0, 0.3)',
+            borderRadius: '8px',
+            padding: '20px',
+            textAlign: 'left'
           }}>
-            {renderTextGrid()}
+            {/* Render the text grid - always visible and reusing same elements */}
+            <div style={{ 
+              position: 'relative', 
+              width: 'fit-content',
+              height: '240px'
+            }}>
+              {renderTextGrid()}
+            </div>
+            
+            {/* Render the chess overlay on top for step 4+ */}
+            {step >= 4 && (
+              <div 
+                ref={chessBoardRef}
+                className={`chess-overlay-container ${step >= 4 ? 'fade-in' : ''}`} 
+                style={{ 
+                  position: 'absolute',
+                  top: '60px', // Moved down 40px from 20px
+                  left: '10px', // Moved left 10px from 20px
+                  width: '100%',
+                  height: '100%',
+                  pointerEvents: 'none',
+                  marginLeft: '-20px',
+                  marginTop: '-20px'
+                }}
+              >
+                {renderChessOverlay()}
+              </div>
+            )}
           </div>
           
-          {/* Render the chess overlay on top for step 4+ */}
-          {step >= 4 && (
-            <div 
-              ref={chessBoardRef}
-              className={`chess-overlay-container ${step >= 4 ? 'fade-in' : ''}`} 
-              style={{ 
-                position: 'absolute',
-                top: '60px', // Moved down 40px from 20px
-                left: '10px', // Moved left 10px from 20px
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'none',
-                marginLeft: '-20px',
-                marginTop: '-20px'
-              }}
-            >
-              {renderChessOverlay()}
-            </div>
-          )}
-        </div>
-        
-        {/* Navigation buttons for manual control */}
-        <div className="navigation-buttons">
-          {step === 1 && (
-            <button className="continue-button" onClick={() => {
-              animateToCleanedText();
-              setTimeout(() => setStep(2), 2000);
-            }}>
-              Remove Spaces and Punctuation
-            </button>
-          )}
-          {step === 2 && (
-            <button className="continue-button" onClick={() => {
-              animateToPaddedText();
-              setTimeout(() => setStep(3), 2000);
-            }}>
-              Apply Padding
-            </button>
-          )}
-          {step === 3 && (
-            <button className="continue-button" onClick={() => {
-              // Animate chess board dissolve effect
-              if (chessBoardRef.current) {
-                const squares = chessBoardRef.current.querySelectorAll('.chess-square');
-                squares.forEach((square, index) => {
-                  // Only animate squares in the filter area (columns 6-13, rows 0-7)
-                  const rowIndex = Math.floor(index / 8);
-                  const colIndex = index % 8;
-                  
-                  if (rowIndex >= 0 && rowIndex <= 7 && colIndex >= 0 && colIndex <= 7) {
-                    gsap.fromTo(square, 
-                      { opacity: 0 },
-                      { 
-                        opacity: 1,
-                        duration: 1,
-                        delay: (rowIndex * 0.1) + (colIndex * 0.05),
-                        ease: "power2.out"
-                      }
-                    );
-                  }
-                });
-              }
-              setStep(4);
-            }}>
-              Show Chess Overlay
-            </button>
-          )}
-          {step >= 4 && (
-            <>
-              <button className="continue-button" onClick={() => setStep(1)}>
-                Restart Process
+          {/* Navigation buttons for manual control */}
+          <div className="navigation-buttons">
+            {step === 1 && (
+              <button className="continue-button" onClick={() => {
+                animateToCleanedText();
+                setTimeout(() => setStep(2), 2000);
+              }}>
+                Remove Spaces and Punctuation
               </button>
-              <div className="slider-container">
-                <label htmlFor="opacity-slider">Adjust Filter Opacity (Left: Hide Letters, Right: Show Letters):</label>
-                <input
-                  id="opacity-slider"
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={100 - opacity} // Reverse the value for display
-                  onChange={handleOpacityChange}
-                  className="opacity-slider"
-                />
-                <span className="slider-value">{opacity}%</span>
-              </div>
-            </>
-          )}
-        </div>
-        
-        {/* Show revealed message when opacity is low enough */}
-        <div className={`revealed-message ${revealedMessage ? 'show' : ''}`}>
-          {revealedMessage && (
-            <>
-              <p>Secret revealed: <strong>{revealedMessage}</strong></p>
-              <button className="continue-button" onClick={() => navigate('/final')}>
-                Continue to Final Gift
+            )}
+            {step === 2 && (
+              <button className="continue-button" onClick={() => {
+                animateToPaddedText();
+                setTimeout(() => setStep(3), 2000);
+              }}>
+                Apply Padding
               </button>
-            </>
-          )}
+            )}
+            {step === 3 && (
+              <button className="continue-button" onClick={() => {
+                // Animate chess board dissolve effect
+                if (chessBoardRef.current) {
+                  const squares = chessBoardRef.current.querySelectorAll('.chess-square');
+                  squares.forEach((square, index) => {
+                    // Only animate squares in the filter area (columns 6-13, rows 0-7)
+                    const rowIndex = Math.floor(index / 8);
+                    const colIndex = index % 8;
+                    
+                    if (rowIndex >= 0 && rowIndex <= 7 && colIndex >= 0 && colIndex <= 7) {
+                      gsap.fromTo(square, 
+                        { opacity: 0 },
+                        { 
+                          opacity: 1,
+                          duration: 1,
+                          delay: (rowIndex * 0.1) + (colIndex * 0.05),
+                          ease: "power2.out"
+                        }
+                      );
+                    }
+                  });
+                }
+                setStep(4);
+              }}>
+                Show Chess Overlay
+              </button>
+            )}
+            {step >= 4 && (
+              <>
+                <button className="continue-button" onClick={() => setStep(1)}>
+                  Restart Process
+                </button>
+                <div className="slider-container">
+                  <label htmlFor="opacity-slider">Adjust Filter Opacity (Left: Hide Letters, Right: Show Letters):</label>
+                  <input
+                    id="opacity-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={100 - opacity} // Reverse the value for display
+                    onChange={handleOpacityChange}
+                    className="opacity-slider"
+                  />
+                  <span className="slider-value">{opacity}%</span>
+                </div>
+              </>
+            )}
+          </div>
+          
+          {/* Show revealed message when opacity is low enough */}
+          <div className={`revealed-message ${revealedMessage ? 'show' : ''}`}>
+            {revealedMessage && (
+              <>
+                <p>Secret revealed: <strong>{revealedMessage}</strong></p>
+                <button className="continue-button" onClick={() => navigate('/final')}>
+                  Continue to Final Gift
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </TreasureBoxBorder>
     );
   };
 
@@ -842,8 +902,12 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     <div style={{ 
       position: 'relative',
       width: '100%',
-      height: '100%'
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
     }}>
+      <ShipWheel onRotationChange={handleWheelRotation} />
       {renderStepContent()}
     </div>
   );
