@@ -90,7 +90,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     if (delta < -180) delta += 360;
     
     // Update rotation with a smoother transition
-    const newRotation = rotation + delta * 0.3; // Reduce the sensitivity
+    const newRotation = rotation + delta; // Direct rotation without dampening
     setRotation(newRotation);
     setCurrentAngle(normalizeAngle(newRotation));
     checkTargetReached(newRotation);
@@ -131,7 +131,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     if (delta < -180) delta += 360;
     
     // Update rotation with a smoother transition
-    const newRotation = rotation + delta * 0.3; // Reduce the sensitivity
+    const newRotation = rotation + delta; // Direct rotation without dampening
     setRotation(newRotation);
     setCurrentAngle(normalizeAngle(newRotation));
     checkTargetReached(newRotation);
