@@ -92,8 +92,8 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     // Calculate new rotation with constraints
     let newRotation = rotation + delta;
     
-    // Constrain rotation to 0-360 range
-    newRotation = normalizeAngle(newRotation);
+    // Constrain rotation to 0-360 range (stop at boundaries)
+    newRotation = Math.max(0, Math.min(360, newRotation));
     
     setRotation(newRotation);
     setCurrentAngle(newRotation);
@@ -137,8 +137,8 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     // Calculate new rotation with constraints
     let newRotation = rotation + delta;
     
-    // Constrain rotation to 0-360 range
-    newRotation = normalizeAngle(newRotation);
+    // Constrain rotation to 0-360 range (stop at boundaries)
+    newRotation = Math.max(0, Math.min(360, newRotation));
     
     setRotation(newRotation);
     setCurrentAngle(newRotation);
