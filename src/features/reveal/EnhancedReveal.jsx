@@ -907,7 +907,16 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       flexDirection: 'column',
       alignItems: 'center'
     }}>
-      <ShipWheel onRotationChange={handleWheelRotation} />
+      <ShipWheel 
+        onRotationChange={handleWheelRotation} 
+        targetAngle={
+          step === 0 ? 180 :    // Initial state: rotate to 180° to display text with fade in effect
+          step === 1 ? 90 :     // After text is shown: rotate to 90° to remove punctuation
+          step === 2 ? 270 :    // After punctuation removed: rotate to 270° to apply padding
+          step === 3 ? 0 :      // After padding applied: rotate to 0° (or 360°) to show chessboard
+          360                   // After chessboard shown: rotate to 360° to apply opacity filter
+        }
+      />
       {renderStepContent()}
     </div>
   );

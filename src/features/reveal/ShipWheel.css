@@ -1,9 +1,61 @@
 .ship-wheel-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   margin: 20px 0;
   user-select: none;
+  width: 100%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+}
+
+.ship-wheel-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ship-wheel-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  color: white;
+}
+
+.ship-wheel-instruction h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.ship-wheel-instruction p {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.ship-wheel-position {
+  margin-top: 20px;
+}
+
+.ship-wheel-position p {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+
+.position-reached {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.position-not-reached {
+  color: #f44336;
+  font-weight: bold;
 }
 
 .ship-wheel {
@@ -15,4 +67,19 @@
 
 .ship-wheel:active {
   cursor: grabbing;
+}
+
+@media (max-width: 768px) {
+  .ship-wheel-container {
+    flex-direction: column;
+  }
+  
+  .ship-wheel-left {
+    margin-bottom: 20px;
+  }
+  
+  .ship-wheel-right {
+    align-items: center;
+    text-align: center;
+  }
 }
