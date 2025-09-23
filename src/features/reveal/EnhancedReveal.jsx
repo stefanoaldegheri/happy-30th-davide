@@ -91,13 +91,13 @@ const EnhancedReveal = () => {
   const navigate = useNavigate();
   const gridRef = useRef(null);
   const chessBoardRef = useRef(null);
-  const [step, setStep] = useState(0); // 0: initial, 1: original text, 2: transition to cleaned text, 3: apply padding, 4: chess overlay, 5: revealed message
+  const [step, setStep] = useState(0); // 0: initial, 1: original text, 2: transition to cleaned text, 3: apply padding, 4: chess overlay, 5: poneglyph alignment, 6: revealed message
   const [opacity, setOpacity] = useState(100); // Start with 100% opacity
   const [revealedMessage, setRevealedMessage] = useState('');
   const [ocrResult, setOcrResult] = useState('');
   const [treasureOpened, setTreasureOpened] = useState(false);
   const [currentPoneglyph, setCurrentPoneglyph] = useState(null);
-  const [chessBoardPosition, setChessBoardPosition] = useState({ left: 10, top: 60 }); // Default position
+  const [chessBoardPosition, setChessBoardPosition] = useState({ left: 10, top: 60 }); // Default position at step 4
   
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
@@ -481,7 +481,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     // Calculate how many 30px moves based on rotation (30px per 30 degrees)
     // Start from initial position and move left based on rotation
     const moves = Math.floor(rotation / 30);
-    const leftOffset = 10 - (moves * 30); // Move 30px left for every 30°
+    const leftOffset = 10 - (moves * 30); // Move 30px left for every 30° from initial position
     
     setChessBoardPosition({ left: leftOffset, top: 60 });
   };
@@ -489,6 +489,13 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   // Handle poneglyph alignment instruction (Step 5)
   const handlePoneglyphInstruction = (rotation) => {
     handlePoneglyphAlignment(rotation);
+    // If rotation is close to 0° (within 5°), show poneglyph
+    if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
+      setCurrentPoneglyph('/images/poneglyph_256.png');
+    } else if (currentPoneglyph) {
+      // Clear poneglyph if we're off target
+      setCurrentPoneglyph(null);
+    }
   };
   
   // Handle wheel rotation changes
@@ -503,8 +510,6 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         setTreasureOpened(true);
         setTimeout(() => {
           setTreasureOpened(false);
-        }, 5000);
-        setTimeout(() => {
           setStep(2);
         }, 5000);
         break;
@@ -564,15 +569,19 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       case 5:
         // Step 5: Align poneglyph - chessboard moves as wheel rotates
         // When target reached (0°), show poneglyph
-        if (angle === 0 || angle === 360) {
+        if (angle === 0 || Math.abs(angle - 360) < 5) {
           setTreasureOpened(true);
+          setCurrentPoneglyph('/images/poneglyph_256.png');
           setTimeout(() => {
-            setCurrentPoneglyph('/images/poneglyph_256.png');
-            setTimeout(() => {
-              setTreasureOpened(false);
-              setStep(6);
-            }, 5000);
-          }, 2500); // Show treasure chest and poneglyph for 2.5s, then transition to step 6
+            setTreasureOpened(false);
+            setStep(6);
+          }, 5000);
+        } else if (angle !== 0 && angle !== 360) {
+          // If releasing at different position, snap back
+          setChessBoardPosition({ left: 10, top: 60 }); // Reset to initial position
+          setTimeout(() => {
+            setStep(4); // Go back to step 4 to retry poneglyph alignment
+          }, 100);
         }
         break;
       case 6:
@@ -874,16 +883,23 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             </div>
           )}
           
-          {/* Show poneglyph when appropriate */}
-          {currentPoneglyph && (
+          {/* Show poneglyph instead of chessboard during step 5 when aligned */}
+          {step === 5 && currentPoneglyph && (
             <div 
               style={{ 
                 position: 'absolute',
-                top: '50%', 
-                left: '50%', 
-                transform: 'translate(-50%, -50%)',
+                top: `${chessBoardPosition.top}px`, 
+                left: `${chessBoardPosition.left}px`, 
+                width: '100%',
+                height: '100%',
+                pointerEvents: 'none',
+                marginLeft: '-20px',
+                marginTop: '-20px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 zIndex: 102,
-                animation: 'poneglyphFadeIn 2s forwards'
+                animation: 'poneglyphFadeIn 1s forwards'
               }}
             >
               <img 
@@ -983,8 +999,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         </div>
         <style>{`
           @keyframes poneglyphFadeIn {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
           }
         `}</style>
       </div>

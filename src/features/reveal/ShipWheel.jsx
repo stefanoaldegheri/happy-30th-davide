@@ -168,13 +168,18 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     if (isDragging) {
       // Check if target is reached when mouse is released
       if (checkTargetReached(rotation)) {
-        // For step 5, if not at 0°, reset
-        if (step === 5 && Math.abs(rotation) > 5) {
-          // Reset wheel to 0° if not properly aligned
-          setRotation(0);
-          setCurrentAngle(0);
-        } else {
+        // For step 5, if properly aligned (at 0°), proceed to next step
+        if (step === 5 && (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5)) {
+          onRotationChange && onRotationChange(rotation);
+        } else if (step !== 5) {
           onRotationChange && onRotationChange(targetAngle);
+        } else {
+          // For step 5, if not at 0°, reset
+          if (Math.abs(rotation) > 5 && Math.abs(rotation - 360) > 5) {
+            // Reset wheel to initial state for step 5
+            setRotation(0);
+            setCurrentAngle(0);
+          }
         }
       }
     }
@@ -186,13 +191,18 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     if (isDragging) {
       // Check if target is reached when touch is released
       if (checkTargetReached(rotation)) {
-        // For step 5, if not at 0°, reset
-        if (step === 5 && Math.abs(rotation) > 5) {
-          // Reset wheel to 0° if not properly aligned
-          setRotation(0);
-          setCurrentAngle(0);
-        } else {
+        // For step 5, if properly aligned (at 0°), proceed to next step
+        if (step === 5 && (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5)) {
+          onRotationChange && onRotationChange(rotation);
+        } else if (step !== 5) {
           onRotationChange && onRotationChange(targetAngle);
+        } else {
+          // For step 5, if not at 0°, reset
+          if (Math.abs(rotation) > 5 && Math.abs(rotation - 360) > 5) {
+            // Reset wheel to initial state for step 5
+            setRotation(0);
+            setCurrentAngle(0);
+          }
         }
       }
     }
