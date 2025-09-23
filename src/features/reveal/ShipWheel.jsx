@@ -31,14 +31,44 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
   // Handle mouse down on wheel
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    setLastPosition({ x: e.clientX, y: e.clientY });
+    const rect = wheelRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Calculate initial angle
+    const initialAngleRad = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+    let initialAngleDeg = initialAngleRad * 180 / Math.PI;
+    
+    // Adjust angle to be from 0 to 360
+    initialAngleDeg = (initialAngleDeg + 90 + 360) % 360;
+    
+    setLastPosition({ 
+      x: e.clientX, 
+      y: e.clientY,
+      initialAngle: initialAngleDeg
+    });
   };
   
   // Handle touch start on wheel
   const handleTouchStart = (e) => {
     setIsDragging(true);
     const touch = e.touches[0];
-    setLastPosition({ x: touch.clientX, y: touch.clientY });
+    const rect = wheelRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Calculate initial angle
+    const initialAngleRad = Math.atan2(touch.clientY - centerY, touch.clientX - centerX);
+    let initialAngleDeg = initialAngleRad * 180 / Math.PI;
+    
+    // Adjust angle to be from 0 to 360
+    initialAngleDeg = (initialAngleDeg + 90 + 360) % 360;
+    
+    setLastPosition({ 
+      x: touch.clientX, 
+      y: touch.clientY,
+      initialAngle: initialAngleDeg
+    });
   };
   
   // Handle mouse move
@@ -49,17 +79,25 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    // Calculate angle from center to current position
+    // Calculate current angle
     const currentAngleRad = Math.atan2(e.clientY - centerY, e.clientX - centerX);
     let currentAngleDeg = currentAngleRad * 180 / Math.PI;
     
     // Adjust angle to be from 0 to 360
     currentAngleDeg = (currentAngleDeg + 90 + 360) % 360;
     
-    setCurrentAngle(currentAngleDeg);
+    // Calculate rotation delta
+    let delta = currentAngleDeg - lastPosition.initialAngle;
     
-    // Update last position
-    setLastPosition({ x: e.clientX, y: e.clientY });
+    // Handle angle wrap-around
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    
+    // Update rotation
+    const newRotation = rotation + delta;
+    setRotation(newRotation);
+    setCurrentAngle(normalizeAngle(newRotation));
+    checkTargetReached(newRotation);
   };
   
   // Handle touch move
@@ -71,24 +109,32 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    // Calculate angle from center to current position
+    // Calculate current angle
     const currentAngleRad = Math.atan2(touch.clientY - centerY, touch.clientX - centerX);
     let currentAngleDeg = currentAngleRad * 180 / Math.PI;
     
     // Adjust angle to be from 0 to 360
     currentAngleDeg = (currentAngleDeg + 90 + 360) % 360;
     
-    setCurrentAngle(currentAngleDeg);
+    // Calculate rotation delta
+    let delta = currentAngleDeg - lastPosition.initialAngle;
     
-    // Update last position
-    setLastPosition({ x: touch.clientX, y: touch.clientY });
+    // Handle angle wrap-around
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    
+    // Update rotation
+    const newRotation = rotation + delta;
+    setRotation(newRotation);
+    setCurrentAngle(normalizeAngle(newRotation));
+    checkTargetReached(newRotation);
   };
   
   // Handle mouse up
   const handleMouseUp = () => {
     if (isDragging) {
       // Check if target is reached when mouse is released
-      if (checkTargetReached(currentAngle)) {
+      if (checkTargetReached(rotation)) {
         onRotationChange && onRotationChange(targetAngle);
       }
     }
@@ -99,7 +145,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
   const handleTouchEnd = () => {
     if (isDragging) {
       // Check if target is reached when touch is released
-      if (checkTargetReached(currentAngle)) {
+      if (checkTargetReached(rotation)) {
         onRotationChange && onRotationChange(targetAngle);
       }
     }
@@ -121,7 +167,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isDragging, lastPosition, rotation, currentAngle, targetAngle]);
+  }, [isDragging, lastPosition, rotation, targetAngle]);
   
   // Get instruction based on target angle
   const getInstruction = () => {
@@ -159,7 +205,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
           <p>{getInstruction()}</p>
         </div>
         <div className="ship-wheel-position">
-          <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(currentAngle)}°</span></p>
+          <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(normalizeAngle(rotation))}°</span></p>
           <p>Target Position: <span>{targetAngle}°</span></p>
         </div>
       </div>
