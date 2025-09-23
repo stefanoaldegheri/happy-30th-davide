@@ -1024,7 +1024,6 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               position: 'absolute', 
               width: '100px', 
               height: '100px',
-              animation: 'fadeInOut 5s forwards',
               zIndex: 100,
               // Position the treasure chest based on the current step
               left: step === 1 ? '0px' : step === 2 ? 'auto' : step === 3 ? '50%' : step === 4 ? '50%' : '50%',
@@ -1044,11 +1043,11 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 position: 'absolute', 
                 width: '100px', 
                 height: '100px',
-                animation: 'fadeInOut 5s forwards',
                 zIndex: 101,
                 left: '50%',
                 top: '50%',
-                transform: 'translate(-50%, -50%)'
+                transform: 'translate(-50%, -50%)',
+                animation: 'fadeInOut 5s forwards'
               }}
             />
           )}
