@@ -6,8 +6,9 @@
   user-select: none;
   width: 100%;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(188, 161, 88, 0.2); /* Aged brass with transparency */
   border-radius: 15px;
+  border: 2px solid #bca158; /* Aged brass border */
 }
 
 .ship-wheel-left {
@@ -24,19 +25,25 @@
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
-  color: white;
+  color: #3e3224; /* Dark wood text color */
+  background: rgba(245, 233, 211, 0.3); /* Off-white parchment with transparency */
+  border-radius: 10px;
+  border: 1px solid #bca158; /* Aged brass border */
 }
 
 .ship-wheel-instruction h3 {
   margin-top: 0;
   margin-bottom: 10px;
   font-size: 1.5rem;
+  color: #bca158; /* Aged brass color */
+  font-family: 'Georgia', serif;
 }
 
 .ship-wheel-instruction p {
   margin: 0;
   font-size: 1.2rem;
   line-height: 1.5;
+  font-family: 'Georgia', serif;
 }
 
 .ship-wheel-position {
@@ -46,6 +53,7 @@
 .ship-wheel-position p {
   margin: 10px 0;
   font-size: 1.2rem;
+  font-family: 'Georgia', serif;
 }
 
 .position-reached {
@@ -54,7 +62,7 @@
 }
 
 .position-not-reached {
-  color: #f44336;
+  color: #d32f2f;
   font-weight: bold;
 }
 
@@ -63,6 +71,9 @@
   height: 256px;
   cursor: grab;
   transition: transform 0.1s ease;
+  border: 2px solid #bca158; /* Aged brass border */
+  border-radius: 50%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .ship-wheel:active {
