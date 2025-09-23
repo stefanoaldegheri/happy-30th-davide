@@ -89,10 +89,14 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     if (delta > 180) delta -= 360;
     if (delta < -180) delta += 360;
     
-    // Update rotation with a smoother transition
-    const newRotation = rotation + delta; // Direct rotation without dampening
+    // Calculate new rotation with constraints
+    let newRotation = rotation + delta;
+    
+    // Constrain rotation to 0-360 range
+    newRotation = normalizeAngle(newRotation);
+    
     setRotation(newRotation);
-    setCurrentAngle(normalizeAngle(newRotation));
+    setCurrentAngle(newRotation);
     checkTargetReached(newRotation);
     
     // Update last position
@@ -130,10 +134,14 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     if (delta > 180) delta -= 360;
     if (delta < -180) delta += 360;
     
-    // Update rotation with a smoother transition
-    const newRotation = rotation + delta; // Direct rotation without dampening
+    // Calculate new rotation with constraints
+    let newRotation = rotation + delta;
+    
+    // Constrain rotation to 0-360 range
+    newRotation = normalizeAngle(newRotation);
+    
     setRotation(newRotation);
-    setCurrentAngle(normalizeAngle(newRotation));
+    setCurrentAngle(newRotation);
     checkTargetReached(newRotation);
     
     // Update last position
