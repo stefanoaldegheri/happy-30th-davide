@@ -28,24 +28,27 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     return reached;
   };
   
+  // Prevent default drag behavior to avoid ghosting effect
+  const handleDragStart = (e) => {
+    e.preventDefault();
+    
+    // Create an invisible image to use as drag image
+    const emptyImage = new Image();
+    emptyImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    
+    // Set the drag image to be transparent
+    if (e.dataTransfer) {
+      e.dataTransfer.setDragImage(emptyImage, 0, 0);
+      e.dataTransfer.setData('text/plain', 'ship-wheel');
+    }
+  };
+  
   // Handle mouse down on wheel
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    const rect = wheelRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    // Calculate initial angle
-    const initialAngleRad = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-    let initialAngleDeg = initialAngleRad * 180 / Math.PI;
-    
-    // Adjust angle to be from 0 to 360
-    initialAngleDeg = (initialAngleDeg + 90 + 360) % 360;
-    
     setLastPosition({ 
       x: e.clientX, 
-      y: e.clientY,
-      initialAngle: initialAngleDeg
+      y: e.clientY 
     });
   };
   
@@ -53,21 +56,9 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
   const handleTouchStart = (e) => {
     setIsDragging(true);
     const touch = e.touches[0];
-    const rect = wheelRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    // Calculate initial angle
-    const initialAngleRad = Math.atan2(touch.clientY - centerY, touch.clientX - centerX);
-    let initialAngleDeg = initialAngleRad * 180 / Math.PI;
-    
-    // Adjust angle to be from 0 to 360
-    initialAngleDeg = (initialAngleDeg + 90 + 360) % 360;
-    
     setLastPosition({ 
       x: touch.clientX, 
-      y: touch.clientY,
-      initialAngle: initialAngleDeg
+      y: touch.clientY 
     });
   };
   
@@ -86,18 +77,29 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     // Adjust angle to be from 0 to 360
     currentAngleDeg = (currentAngleDeg + 90 + 360) % 360;
     
-    // Calculate rotation delta
-    let delta = currentAngleDeg - lastPosition.initialAngle;
+    // Calculate rotation based on previous angle
+    const prevAngleRad = Math.atan2(lastPosition.y - centerY, lastPosition.x - centerX);
+    let prevAngleDeg = prevAngleRad * 180 / Math.PI;
+    prevAngleDeg = (prevAngleDeg + 90 + 360) % 360;
+    
+    // Calculate the difference in rotation
+    let delta = currentAngleDeg - prevAngleDeg;
     
     // Handle angle wrap-around
     if (delta > 180) delta -= 360;
     if (delta < -180) delta += 360;
     
-    // Update rotation
-    const newRotation = rotation + delta;
+    // Update rotation with a smoother transition
+    const newRotation = rotation + delta * 0.3; // Reduce the sensitivity
     setRotation(newRotation);
     setCurrentAngle(normalizeAngle(newRotation));
     checkTargetReached(newRotation);
+    
+    // Update last position
+    setLastPosition({ 
+      x: e.clientX, 
+      y: e.clientY 
+    });
   };
   
   // Handle touch move
@@ -116,18 +118,29 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
     // Adjust angle to be from 0 to 360
     currentAngleDeg = (currentAngleDeg + 90 + 360) % 360;
     
-    // Calculate rotation delta
-    let delta = currentAngleDeg - lastPosition.initialAngle;
+    // Calculate rotation based on previous angle
+    const prevAngleRad = Math.atan2(lastPosition.y - centerY, lastPosition.x - centerX);
+    let prevAngleDeg = prevAngleRad * 180 / Math.PI;
+    prevAngleDeg = (prevAngleDeg + 90 + 360) % 360;
+    
+    // Calculate the difference in rotation
+    let delta = currentAngleDeg - prevAngleDeg;
     
     // Handle angle wrap-around
     if (delta > 180) delta -= 360;
     if (delta < -180) delta += 360;
     
-    // Update rotation
-    const newRotation = rotation + delta;
+    // Update rotation with a smoother transition
+    const newRotation = rotation + delta * 0.3; // Reduce the sensitivity
     setRotation(newRotation);
     setCurrentAngle(normalizeAngle(newRotation));
     checkTargetReached(newRotation);
+    
+    // Update last position
+    setLastPosition({ 
+      x: touch.clientX, 
+      y: touch.clientY 
+    });
   };
   
   // Handle mouse up
@@ -197,6 +210,7 @@ const ShipWheel = ({ onRotationChange, targetAngle }) => {
           style={{ transform: `rotate(${rotation}deg)` }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
+          onDragStart={handleDragStart}
         />
       </div>
       <div className="ship-wheel-right">
