@@ -496,50 +496,45 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     switch (step) {
       case 0:
         // Step 0: Move to 180° - Initial text display
-        setTreasureOpened(true);
-        setTimeout(() => {
-          if (step < 1) {
-            setStep(1);
-          }
-          setTreasureOpened(false);
-        }, 5000);
+        setStep(1);
         break;
       case 1:
         // Step 1: Move to 90° - open treasure chest west and fade in text
         setTreasureOpened(true);
         setTimeout(() => {
-          if (step === 1) {
-            setStep(2);
-          }
           setTreasureOpened(false);
+        }, 5000);
+        setTimeout(() => {
+          setStep(2);
         }, 5000);
         break;
       case 2:
         // Step 2: Move to 270° - open treasure chest east and remove punctuation
         setTreasureOpened(true);
         setTimeout(() => {
+          setTreasureOpened(false);
           if (step === 2) {
             animateToCleanedText();
             setTimeout(() => setStep(3), 2000);
           }
-          setTreasureOpened(false);
         }, 5000);
         break;
       case 3:
         // Step 3: Move to 180° - open treasure chest south and apply padding
         setTreasureOpened(true);
         setTimeout(() => {
+          setTreasureOpened(false);
           if (step === 3) {
             animateToPaddedText();
             setTimeout(() => setStep(4), 2000);
           }
-          setTreasureOpened(false);
         }, 5000);
         break;
       case 4:
         // Step 4: Move to 0° - open treasure chest north and show chessboard
         setTreasureOpened(true);
         setTimeout(() => {
+          setTreasureOpened(false);
           if (step === 4) {
             // Animate chess board dissolve effect
             if (chessBoardRef.current) {
@@ -564,20 +559,24 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             }
             setStep(5);
           }
-          setTreasureOpened(false);
         }, 5000);
         break;
       case 5:
         // Step 5: Align poneglyph - chessboard moves as wheel rotates
-        // This is handled by the handlePoneglyphAlignment function
-        // When target reached, move to next step
+        // When target reached (0°), show poneglyph
         if (angle === 0 || angle === 360) {
-          setStep(6);
+          setTreasureOpened(true);
+          setTimeout(() => {
+            setCurrentPoneglyph('/images/poneglyph_256.png');
+            setTimeout(() => {
+              setTreasureOpened(false);
+              setStep(6);
+            }, 5000);
+          }, 2500); // Show treasure chest and poneglyph for 2.5s, then transition to step 6
         }
         break;
       case 6:
         // Step 6: Apply opacity filter gradually from current position (opacity 100) to 360° (full transparent)
-        // This is handled by the opacity slider, but we could add an automatic transition
         // When rotation reaches 360°, reveal the final message
         if (angle === 360) {
           const grid = textToPaddedGrid(ocrResult || originalText);
@@ -830,10 +829,12 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     return (
       <div className="step-all-transitions">
         {/* Show step title based on current step */}
-        {step === 1 && <h2>Recognized Text</h2>}
-        {step === 2 && <h2>Removing Spaces and Punctuation</h2>}
-        {step === 3 && <h2>Applying Padding</h2>}
-        {(step >= 4) && <h2>Chess Filter Overlay</h2>}
+        {step === 1 && <h2>Rotate to 90°: Open treasure chest west</h2>}
+        {step === 2 && <h2>Rotate to 270°: Open treasure chest east and remove punctuation</h2>}
+        {step === 3 && <h2>Rotate to 180°: Open treasure chest south and apply padding</h2>}
+        {step === 4 && <h2>Rotate to 0°: Open treasure chest north and show chessboard</h2>}
+        {step === 5 && <h2>Align poneglyph: slide chessboard to target position</h2>}
+        {step === 6 && <h2>Apply opacity filter: from current position to 360°</h2>}
         
         <div style={{ 
           position: 'relative', 
@@ -872,27 +873,54 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               {renderChessOverlay()}
             </div>
           )}
+          
+          {/* Show poneglyph when appropriate */}
+          {currentPoneglyph && (
+            <div 
+              style={{ 
+                position: 'absolute',
+                top: '50%', 
+                left: '50%', 
+                transform: 'translate(-50%, -50%)',
+                zIndex: 102,
+                animation: 'poneglyphFadeIn 2s forwards'
+              }}
+            >
+              <img 
+                src={currentPoneglyph} 
+                alt="Poneglyph" 
+                style={{ width: '100px', height: '100px' }}
+              />
+            </div>
+          )}
         </div>
         
         {/* Navigation buttons for manual control */}
         <div className="navigation-buttons">
           {step === 1 && (
             <button className="continue-button" onClick={() => {
-              animateToCleanedText();
-              setTimeout(() => setStep(2), 2000);
+              setTimeout(() => setStep(2), 5000); // Simulate the rotation process
             }}>
-              Remove Spaces and Punctuation
+              Rotate to 90°
             </button>
           )}
           {step === 2 && (
             <button className="continue-button" onClick={() => {
-              animateToPaddedText();
+              animateToCleanedText();
               setTimeout(() => setStep(3), 2000);
             }}>
-              Apply Padding
+              Rotate to 270°
             </button>
           )}
           {step === 3 && (
+            <button className="continue-button" onClick={() => {
+              animateToPaddedText();
+              setTimeout(() => setStep(4), 2000);
+            }}>
+              Rotate to 180°
+            </button>
+          )}
+          {step === 4 && (
             <button className="continue-button" onClick={() => {
               // Animate chess board dissolve effect
               if (chessBoardRef.current) {
@@ -915,12 +943,12 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                   }
                 });
               }
-              setStep(4);
+              setStep(5);
             }}>
-              Show Chess Overlay
+              Rotate to 0°
             </button>
           )}
-          {(step >= 4) && (
+          {(step >= 5) && (
             <>
               <button className="continue-button" onClick={() => setStep(1)}>
                 Restart Process
@@ -953,6 +981,12 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             </>
           )}
         </div>
+        <style>{`
+          @keyframes poneglyphFadeIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          }
+        `}</style>
       </div>
     );
   };
@@ -990,9 +1024,34 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               position: 'absolute', 
               width: '100px', 
               height: '100px',
+              animation: 'fadeInOut 5s forwards',
+              zIndex: 100,
+              // Position the treasure chest based on the current step
+              left: step === 1 ? '0px' : step === 2 ? 'auto' : step === 3 ? '50%' : step === 4 ? '50%' : '50%',
+              right: step === 2 ? '0px' : 'auto',
+              top: step === 4 ? '0px' : step === 3 ? 'auto' : '50%',
+              bottom: step === 3 ? '0px' : 'auto',
+              transform: step === 1 ? 'translateY(-50%)' : step === 2 ? 'translateY(-50%)' : step === 3 ? 'translateX(-50%)' : step === 4 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
               animation: 'fadeInOut 5s forwards'
             }}
           />
+          {(step === 5 && currentPoneglyph) && ( // Show poneglyph only during step 5 after treasure chest opens
+            <img 
+              src={currentPoneglyph} 
+              alt="Poneglyph" 
+              className="poneglyph-image"
+              style={{ 
+                position: 'absolute', 
+                width: '100px', 
+                height: '100px',
+                animation: 'fadeInOut 5s forwards',
+                zIndex: 101,
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+            />
+          )}
         </div>
       )}
       {renderStepContent()}
