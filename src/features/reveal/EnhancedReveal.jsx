@@ -103,6 +103,7 @@ const EnhancedReveal = () => {
   const [chessBoardOpacity, setChessBoardOpacity] = useState(0); // Start with 0 opacity for fade-in effect
   const [revealedState, setRevealedState] = useState({}); // Store the final revealed state when moving to step 6
   const [animationCompleted, setAnimationCompleted] = useState(false); // Track if animation has run
+  const [allLettersAnimated, setAllLettersAnimated] = useState(false); // Track if all letter animations are completed
 
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
@@ -203,6 +204,11 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         // }
 
         console.log('Letter positions:', letterPositions);
+        
+        // Define a closure to capture the total animations count
+        const totalAnimations = Math.min(redLettersToMove.length, letterPositions.length);
+        let completedAnimations = 0;
+        
         redLettersToMove.forEach((letterData, index) => {
           if (index < letterPositions.length) {
             // Calculate the original position relative to the grid container
@@ -219,8 +225,16 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             );
 
 
+            // Create a function that captures the current value of completedAnimations
+            const handleAnimationComplete = () => {
+              completedAnimations++;
+              if (completedAnimations === totalAnimations) {
+                // All animations are completed
+                setAllLettersAnimated(true);
+              }
+            };
 
-        gsap.set(letterData.element, {
+            gsap.set(letterData.element, {
               left: finalPos.x,
               top: finalPos.y,
               x: 0, // Reset the transform
@@ -230,22 +244,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               color: 'red',
               delay:  index * 0.35,
               // fontSize and fontWeight are already animated, so no need to set them again
+              onComplete: handleAnimationComplete
             });
-
-            // Animate the letter from its original grid position to the new position in row 4
-            // gsap.to(letterData.element, {
-            //   x: finalPos.x - originalLeft,
-            //   y: finalPos.y,
-            //   fontSize: '32px',
-            //   fontWeight: 'bold',
-            //   duration: 2,
-            //   ease: "power2.inOut",
-            //   position: 'absolute',
-            //   delay: index * 0.35, // Stagger the animation
-            //   onComplete: () => {
-           
-            //   }
-            // });
           }
         });
       }, 50);
@@ -1256,6 +1256,25 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             }}
           >
             {renderTextGrid()}
+            {/* Continue button positioned 30px above and 60px right of row 6, column 20 (x=660, y=150) in main grid */}
+            {step === 6 && allLettersAnimated && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: '660px',
+                  top: '150px',
+                  zIndex: 201, // Above the letters
+                }}
+              >
+                <button
+                  type="button"
+                  className="continue-button"
+                  onClick={() => navigate('/final')}
+                >
+                  Continue to Final Gift
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Render the chess overlay on top for step 4+ (chessboard appears after completing step 3, in step 4) */}
@@ -1319,6 +1338,25 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               }}
             >
               {/* The animated letters will be positioned in this area */}
+              {/* Continue button positioned below row 6, column 20 (x=600, y=210 in main grid) */}
+              {animationCompleted && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: '600px',
+                    top: '-50px', // Position at y=210px in main grid (210 - 260 = -50)
+                    zIndex: 201, // Above the letters
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="continue-button"
+                    onClick={() => navigate('/final')}
+                  >
+                    Continue to Final Gift
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1331,22 +1369,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             </p>
           )}
           {/* In step 6, the letters are displayed in the dedicated container above */}
-          {step === 6 && animationCompleted && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginTop: '20px',
-              }}
-            >
-              <button
-                className="continue-button"
-                onClick={() => navigate('/final')}
-              >
-                Continue to Final Gift
-              </button>
-            </div>
-          )}
+          {/* Button is now positioned in the grid area below the red text */}
         </div>
         <style>{`
         @keyframes poneglyphFadeIn {
