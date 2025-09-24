@@ -895,13 +895,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     
     return (
       <div className="step-all-transitions">
-        {/* Show step title based on current step */}
-        {step === 1 && <h2>Step 1: Rotate to 180° to show text</h2>}
-        {step === 2 && <h2>Step 2: Rotate to 90° to remove punctuation</h2>}
-        {step === 3 && <h2>Step 3: Rotate to 180° to make chessboard appear with fade-in</h2>}
-        {step === 4 && <h2>Step 4: Slide chessboard, rotate to 16°-44° range to continue</h2>}
-        {step === 5 && <h2>Step 5: Rotate to 0° to control opacity and reveal message</h2>}
-        {step === 6 && <h2>Step 6: Message revealed</h2>}
+        {/* Remove step titles - captions above text grid are no longer needed */}
         
         <div style={{ 
           position: 'relative', 
