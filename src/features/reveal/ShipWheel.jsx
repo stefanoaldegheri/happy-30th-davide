@@ -338,8 +338,6 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
         <div className="ship-wheel-position">
           {step < 4 && <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>}
           {step < 4 && <p>Target Position: <span>{getTargetAngle()}°</span></p>}
-          {(step === 4 || step === 5) && <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>}
-          {(step === 4 || step === 5) && <p>Target Position: <span>{getTargetAngle()}°</span></p>}
         </div>
       </div>
     </div>

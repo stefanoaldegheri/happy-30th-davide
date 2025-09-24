@@ -100,6 +100,7 @@ const EnhancedReveal = () => {
   const [chessBoardPosition, setChessBoardPosition] = useState({ left: 420, top: 0 }); // Start at column 14 (14*30=420px) to align a8 with R in row 0 position 14
   const [chessBoardOpacity, setChessBoardOpacity] = useState(0); // Start with 0 opacity for fade-in effect
   const [revealedState, setRevealedState] = useState({}); // Store the final revealed state when moving to step 6
+  const [animationCompleted, setAnimationCompleted] = useState(false); // Track if animation has run
   
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
@@ -138,16 +139,90 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       // but we don't want to automatically animate the chess board
     }
     
-    // When step reaches 6, animate the letters to form a word
-    if (step === 6) {
+    // When step reaches 6, animate the letters to form a word (only once)
+    if (step === 6 && !animationCompleted) {
+      setAnimationCompleted(true);
       // Delay to ensure state is set before running animation
       setTimeout(() => {
-        animateLettersToWord();
+        // Get all red letters from the grid that were under chess pieces
+        const chars = gridRef.current ? Array.from(gridRef.current.querySelectorAll('.grid-char')) : [];
+        const redLettersToMove = [];
+        
+        chars.forEach(char => {
+          const row = parseInt(char.dataset.currentRow);
+          const col = parseInt(char.dataset.currentCol);
+          const isUnderPiece = isPositionUnderChessPiece(row, col);
+          const isRedText = char.style.color === 'red' && parseFloat(char.style.opacity || '1') > 0;
+          
+          if (isUnderPiece && char.textContent.trim() !== '' && isRedText) {
+            redLettersToMove.push({
+              element: char,
+              text: char.textContent,
+              row: row,
+              col: col
+            });
+          }
+        });
+        
+        // Get the secret word - it should be "davidesthirty" based on the pieces
+        const secretWord = revealedMessage || "davidesthirty";
+        
+        // Calculate the final positions for each letter in the 4th row (index 3) from column 20 to 34
+        const letterPositions = [];
+        const targetRow = 3; // 4th row (0-indexed)
+        const startCol = 20;
+        
+        // Position each letter in sequence from column 20 onwards
+        for (let i = 0; i < secretWord.length && (startCol + i) < 35; i++) {
+          const finalCol = startCol + i;
+          const finalX = finalCol * 30; // 30px per column
+          const finalY = targetRow * 30; // 30px per row
+          letterPositions.push({ x: finalX, y: finalY });
+        }
+        
+        // Move each red letter from its original grid position to the new position in row 4
+        redLettersToMove.forEach((letterData, index) => {
+          if (index < letterPositions.length) {
+            // Calculate the original position relative to the grid container
+            const originalLeft = parseInt(letterData.element.style.left) || (letterData.col * 30);
+            const originalTop = parseInt(letterData.element.style.top) || (letterData.row * 30);
+            
+            // Get the final position for this letter
+            const finalPos = letterPositions[index];
+            
+            // Animate the letter from its original grid position to the new position in row 4
+            gsap.to(letterData.element, {
+              x: finalPos.x - originalLeft,
+              y: finalPos.y - originalTop,
+              fontSize: '32px',
+              fontWeight: 'bold',
+              duration: 2,
+              ease: "power2.inOut",
+              delay: index * 0.15, // Stagger the animation
+              onComplete: () => {
+                // Ensure the letter stays in its final position
+                letterData.element.style.position = 'absolute';
+                letterData.element.style.left = finalPos.x + 'px';
+                letterData.element.style.top = finalPos.y + 'px';
+                letterData.element.style.transform = 'none';
+                letterData.element.style.zIndex = '100';
+                letterData.element.style.fontSize = '32px';
+                letterData.element.style.fontWeight = 'bold';
+                letterData.element.style.color = 'red';
+              }
+            });
+          }
+        });
       }, 50);
     }
     
+    // Reset animation completed when leaving step 6
+    if (step !== 6) {
+      setAnimationCompleted(false);
+    }
+    
     // Remove the automatic transition from step 1 to step 2 since this is now handled by wheel rotation
-  }, [step]);
+  }, [step, animationCompleted]);
   
   // Animate transition from original text to cleaned text
   const animateToCleanedText = () => {
@@ -956,8 +1031,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     );
   };
   
-  // Render the step content with updated chess board position
-  const renderStepContent = () => {
+  {/* Render the step content with updated chess board position */}
+        const renderStepContent = () => {
     if (step < 1) return null; // Don't render anything until the first rotation occurs (step 1+)
     
     return (
@@ -998,6 +1073,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             </div>
           )}
           
+          {/* No container needed for step 6 since letters move to the 4th row of the grid */}
+          
           {/* Show poneglyph instead of chessboard during step 5 when aligned */}
           {step === 5 && currentPoneglyph && (
             <div 
@@ -1020,6 +1097,24 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 alt="Poneglyph" 
                 style={{ width: '100px', height: '100px' }}
               />
+            </div>
+          )}
+          
+          {/* Create a new grid area below the main text grid for step 6 to show animated letters */}
+          {step === 6 && (
+            <div 
+              id="secret-word-grid"
+              style={{ 
+                position: 'relative',
+                width: '1140px', 
+                height: '60px', // Height for one row of text
+                top: '260px', // Below the main grid (240px + 20px margin)
+                left: 0,
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              {/* The animated letters will be positioned in this area */}
             </div>
           )}
         </div>
@@ -1104,30 +1199,13 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               </button>
             </>
           )}
-          {/* In step 6, show animated letters forming the word */}
+          {/* In step 6, the letters are displayed in the dedicated container above */}
           {step === 6 && (
-            <div style={{ 
-              marginTop: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center' 
-            }}>
-              <p>Secret revealed: </p>
-              <div id="secret-word-container" style={{ 
-                display: 'flex', 
-                marginLeft: '10px',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: 'red'
-              }}>
-                {/* The animated letters will be positioned here by the animation */}
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <button className="continue-button" onClick={() => navigate('/final')}>
+                Continue to Final Gift
+              </button>
             </div>
-          )}
-          {step === 6 && (
-            <button className="continue-button" onClick={() => navigate('/final')}>
-              Continue to Final Gift
-            </button>
           )}
         </div>
         <style>{`
@@ -1140,61 +1218,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     );
   };
 
-  // Function to animate visible letters to form a word
-  const animateLettersToWord = () => {
-    if (gridRef.current) {
-      // Get all characters that were under chess pieces (red, bold characters)
-      const chars = gridRef.current.querySelectorAll('.grid-char');
-      const charsToAnimate = [];
-      
-      chars.forEach(char => {
-        const row = parseInt(char.dataset.currentRow);
-        const col = parseInt(char.dataset.currentCol);
-        const isUnderPiece = isPositionUnderChessPiece(row, col);
-        const isRedAndVisible = char.style.color === 'red' && parseFloat(char.style.opacity || '1') > 0;
-        
-        if (isUnderPiece && char.textContent.trim() !== '' && isRedAndVisible) {
-          // This character was under a chess piece and should be part of the final word
-          charsToAnimate.push({
-            element: char,
-            originalLeft: parseInt(char.style.left) || (col * 30),
-            originalTop: parseInt(char.style.top) || (row * 30),
-            charText: char.textContent
-          });
-        }
-      });
-      
-      // Get the secret word - it should be "davidesthirty" based on the pieces
-      const secretWord = revealedMessage || "davidesthirty";
-      
-      // Position the characters to form the word in a single row below the grid
-      charsToAnimate.forEach((charData, index) => {
-        if (index < secretWord.length) {
-          // Position each character in sequence to spell the secret word
-          // Using the original text content to make sure it matches the expected sequence
-          const targetLeft = 200 + (index * 36); // 36px spacing with some left margin
-          const targetTop = 300; // Position below the grid (240px height + some margin)
-          
-          // Animate the character from its original position to the new position in the word
-          gsap.to(charData.element, {
-            x: targetLeft - charData.originalLeft,
-            y: targetTop - charData.originalTop,
-            fontSize: '24px',
-            fontWeight: 'bold',
-            duration: 2,
-            ease: "power2.out",
-            delay: index * 0.2, // Stagger the animation
-            onComplete: () => {
-              // Ensure the character stays in the new position after animation
-              charData.element.style.position = 'absolute';
-              charData.element.style.left = targetLeft + 'px';
-              charData.element.style.top = targetTop + 'px';
-            }
-          });
-        }
-      });
-    }
-  };
+  
 
   return (
     <div style={{ 
