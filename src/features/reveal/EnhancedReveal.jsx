@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import ShipWheel from './ShipWheel';
-import TreasureBoxBorder from './TreasureBoxBorder';
 import './EnhancedReveal.css';
 
 // Chess position data from the provided JSON
@@ -861,12 +860,90 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     // Get the padded grid (with padding applied)
     const paddedGrid = textToPaddedGrid(ocrResult || originalText);
 
+    // Calculate number of columns (max across all rows)
+    const maxCols = Math.max(...originalGrid.map(row => row.length), 38); // Use at least 38 columns
+
     return (
       <div
         className="text-grid"
         ref={gridRef}
-        style={{ position: 'relative', height: '240px', width: '1140px' }}
+        style={{
+          position: 'relative',
+          height: '240px',
+          width: '1140px',
+          overflow: 'visible' // Allow treasure boxes to be visible outside the grid
+        }}
       >
+        {/* Top border treasure boxes */}
+       {Array.from({ length: Math.ceil(maxCols/2) -1 }).map((_, colIndex) => (
+         <img
+           key={`top-tbox-${colIndex}`}
+           src="/images/treasure_box_256.png"
+           alt="Treasure Box"
+           style={{
+             position: 'absolute',
+             top: '-60px', /* Move up by half the treasure box height (60/2) */
+             left: `${colIndex * 60}px`,
+             width: '60px',
+             height: '60px',
+             zIndex: 10,
+           }}
+         />
+       ))}
+       
+       {/* Bottom border treasure boxes */}
+       {Array.from({ length: Math.ceil(maxCols/2) -1 }).map((_, colIndex) => (
+         <img
+           key={`bottom-tbox-${colIndex}`}
+           src="/images/treasure_box_256.png"
+           alt="Treasure Box"
+           style={{
+             position: 'absolute',
+             top: '240px', /* Align with bottom of grid plus half treasure box height (240 + 30) */
+             left: `${colIndex * 60}px`,
+             width: '60px',
+             height: '60px',
+             zIndex: 10,
+           }}
+         />
+       ))}
+       
+       {/* Left border treasure boxes */}
+       {Array.from({ length: 6 }).map((_, rowIndex) => (
+         <img
+           key={`left-tbox-${rowIndex}`}
+           src="/images/treasure_box_256.png"
+           alt="Treasure Box"
+           style={{
+             position: 'absolute',
+             top: `${rowIndex * 60 -60}px`,
+             left: '-60px', /* Move left by half the treasure box width (60/2) */
+             width: '60px',
+             height: '60px',
+             zIndex: 10,
+           }}
+         />
+       ))}
+       
+       {/* Right border treasure boxes */}
+       {Array.from({ length: 6 }).map((_, rowIndex) => (
+         <img
+           key={`right-tbox-${rowIndex}`}
+           src="/images/treasure_box_256.png"
+           alt="Treasure Box"
+           style={{
+             position: 'absolute',
+             top: `${rowIndex * 60-60}px`,
+             left: '1140px', /* Grid width (1140) + half treasure box width (30) */
+             width: '60px',
+             height: '60px',
+             zIndex: 10,
+           }}
+         />
+       ))}
+       
+  
+        
         {' '}
         {/* 38 columns * 30px = 1140px */}
         {originalGrid.map((row, rowIndex) => {
