@@ -98,6 +98,7 @@ const EnhancedReveal = () => {
   const [treasureOpened, setTreasureOpened] = useState(false);
   const [currentPoneglyph, setCurrentPoneglyph] = useState(null);
   const [chessBoardPosition, setChessBoardPosition] = useState({ left: 450, top: 60 }); // Center position: (38-8)/2 * 30px = 450px
+  const [chessBoardOpacity, setChessBoardOpacity] = useState(0); // Start with 0 opacity for fade-in effect
   
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
@@ -496,7 +497,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     }
   };
   
-  // Update the chess board position based on rotation
+  // Update the chess board position and opacity based on rotation
   const handlePoneglyphAlignment = (rotation) => {
     // Calculate how many 30px moves based on rotation (30px per 30 degrees)
     // Start from initial position (center) and move left based on rotation
@@ -504,6 +505,27 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     const leftOffset = 450 - (moves * 30); // Move 30px left for every 30° from initial position (450px = center)
     
     setChessBoardPosition({ left: leftOffset, top: 60 });
+    
+    // Calculate opacity based on rotation:
+    // From 270° or more: 0% opacity (fully transparent)
+    // To 180° or less: 100% opacity (fully opaque)
+    let opacity = 0;
+    if (rotation <= 180) {
+      // Fully opaque at 180° or less
+      opacity = 1;
+    } else if (rotation >= 270) {
+      // Fully transparent at 270° or more
+      opacity = 0;
+    } else {
+      // Interpolate between 180° (100% opacity) and 270° (0% opacity)
+      // opacity = 1 - ((rotation - 180) / (270 - 180))
+      opacity = 1 - ((rotation - 180) / 90);
+    }
+    
+    // Add console log for debugging
+    console.log(`Rotation: ${rotation}°, Calculated opacity: ${opacity}`);
+    
+    setChessBoardOpacity(opacity);
   };
   
   // Handle poneglyph alignment instruction (Step 5)
@@ -784,7 +806,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   
   // Render the chess overlay
   const renderChessOverlay = () => {
-    // Show chessboard at column 0 as requested
+    // Show chessboard at column 0 (relative to container) as requested
     const startColumn = 0;
     
     return (
@@ -892,8 +914,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                marginLeft: '-20px',
-                marginTop: '-20px'
+                opacity: chessBoardOpacity // Use dynamic opacity based on wheel position
               }}
             >
               {renderChessOverlay()}

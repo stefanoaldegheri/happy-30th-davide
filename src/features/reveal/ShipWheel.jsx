@@ -98,8 +98,8 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     setRotation(newRotation);
     setCurrentAngle(newRotation);
     
-    // For step 5 (poneglyph alignment), call the alignment function
-    if (step === 5) {
+    // For step 4 and 5 (chessboard positioning and poneglyph alignment), call the alignment function
+    if (step === 4 || step === 5) {
       onPoneglyphAlignment && onPoneglyphAlignment(newRotation);
     }
     
@@ -149,8 +149,8 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     setRotation(newRotation);
     setCurrentAngle(newRotation);
     
-    // For step 5 (poneglyph alignment), call the alignment function
-    if (step === 5) {
+    // For step 4 and 5 (chessboard positioning and poneglyph alignment), call the alignment function
+    if (step === 4 || step === 5) {
       onPoneglyphAlignment && onPoneglyphAlignment(newRotation);
     }
     
@@ -166,20 +166,26 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   // Handle mouse up
   const handleMouseUp = () => {
     if (isDragging) {
-      // For step 5, check if aligned close to 0° or 360°
-      if (step === 5) {
+      // For step 4 (sliding chessboard), check if close to 340°
+      // For step 5 (opacity control), check if close to 0°
+      if (step === 4) {
+        if (Math.abs(rotation - 340) < 5) {
+          // If properly aligned, trigger the next step
+          onRotationChange && onRotationChange(340);
+        }
+      } else if (step === 5) {
+        // For step 5, check if aligned close to 0° or 360°
         if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
-          // If properly aligned, trigger the poneglyph action
-          onRotationChange && onRotationChange(0);
+          // If properly aligned, trigger the reveal action
+          onRotationChange && onRotationChange(0); // or 360
         } else {
-          // If not properly aligned, reset the rotation but don't change step
-          setRotation(0);
-          setCurrentAngle(0);
+          // If not properly aligned, keep the rotation as is for poneglyph alignment
+          onRotationChange && onRotationChange(rotation);
         }
       } else {
         // For other steps, check if target is reached
         if (checkTargetReached(rotation)) {
-          onRotationChange && onRotationChange(targetAngle);
+          onRotationChange && onRotationChange(getTargetAngle());
         }
       }
     }
@@ -189,20 +195,26 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   // Handle touch end
   const handleTouchEnd = () => {
     if (isDragging) {
-      // For step 5, check if aligned close to 0° or 360°
-      if (step === 5) {
+      // For step 4 (sliding chessboard), check if close to 340°
+      // For step 5 (opacity control), check if close to 0°
+      if (step === 4) {
+        if (Math.abs(rotation - 340) < 5) {
+          // If properly aligned, trigger the next step
+          onRotationChange && onRotationChange(340);
+        }
+      } else if (step === 5) {
+        // For step 5, check if aligned close to 0° or 360°
         if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
-          // If properly aligned, trigger the poneglyph action
-          onRotationChange && onRotationChange(0);
+          // If properly aligned, trigger the reveal action
+          onRotationChange && onRotationChange(0); // or 360
         } else {
-          // If not properly aligned, reset the rotation but don't change step
-          setRotation(0);
-          setCurrentAngle(0);
+          // If not properly aligned, keep the rotation as is for poneglyph alignment
+          onRotationChange && onRotationChange(rotation);
         }
       } else {
         // For other steps, check if target is reached
         if (checkTargetReached(rotation)) {
-          onRotationChange && onRotationChange(targetAngle);
+          onRotationChange && onRotationChange(getTargetAngle());
         }
       }
     }
@@ -223,48 +235,48 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
-    };
+    }
   }, [isDragging, lastPosition, rotation, targetAngle, step, onPoneglyphAlignment]);
   
-  // Get instruction based on current step
+  // Get instruction based on current step - updated to match new transition sequence
   const getInstruction = () => {
     switch (step) {
       case 0:
-        return "Rotate wheel to 180° to display text";
+        return "Step 0: Rotate to 180° to show text";
       case 1:
-        return "Move to 90°: open treasure chest west and fade in text";
+        return "Step 1: Rotate to 90° to remove punctuation";
       case 2:
-        return "Move to 270°: open treasure chest east and remove punctuation";
+        return "Step 2: Rotate to 270° to apply padding";
       case 3:
-        return "Move to 180°: open treasure chest south and apply padding";
+        return "Step 3: Rotate to 180° to show chessboard at column 0";
       case 4:
-        return "Move to 0°: open treasure chest north and show chessboard";
+        return "Step 4: Rotate to 340° to slide chessboard";
       case 5:
-        return "Align poneglyph: slide chessboard to target position";
+        return "Step 5: Rotate to 0° to control opacity and reveal message";
       case 6:
-        return "Apply opacity filter: from 100° (opacity 100) to 360° (full transparent)";
+        return "Step 6: Message revealed";
       default:
         return "Rotate wheel to target position";
     }
   };
   
-  // Get target angle based on current step
+  // Get target angle based on current step - updated to match new transition sequence
   const getTargetAngle = () => {
     switch (step) {
       case 0:
-        return 180;
+        return 180; // Step 0 → target 180° = show text
       case 1:
-        return 90;
+        return 90;  // Step 1 → target 90° = remove punctuation
       case 2:
-        return 270;
+        return 270; // Step 2 → target 270° = apply padding
       case 3:
-        return 180;
+        return 180; // Step 3 → target 180° = show chessboard at column 0
       case 4:
-        return 0;
+        return 340; // Step 4 → target 340° = slide chessboard
       case 5:
-        return 0; // For poneglyph alignment, target is to return to 0
+        return 0;   // Step 5 → target 0° = control opacity to reveal message
       case 6:
-        return 360;
+        return 0;   // Step 6: final step
       default:
         return targetAngle;
     }
@@ -291,6 +303,14 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           onTouchStart={handleTouchStart}
           onDragStart={handleDragStart}
         />
+        {/* Debug controls for testing */}
+        <div style={{ marginTop: '10px', fontSize: '12px' }}>
+          <button onClick={() => { setRotation(180); onRotationChange(180); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 180°</button>
+          <button onClick={() => { setRotation(90); onRotationChange(90); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 90°</button>
+          <button onClick={() => { setRotation(270); onRotationChange(270); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 270°</button>
+          <button onClick={() => { setRotation(340); onRotationChange(340); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 340°</button>
+          <button onClick={() => { setRotation(0); onRotationChange(0); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 0°</button>
+        </div>
       </div>
       <div className="ship-wheel-right">
         <div className="ship-wheel-instruction">
