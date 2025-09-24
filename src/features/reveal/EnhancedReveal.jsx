@@ -97,7 +97,7 @@ const EnhancedReveal = () => {
   const [ocrResult, setOcrResult] = useState('');
   const [treasureOpened, setTreasureOpened] = useState(false);
   const [currentPoneglyph, setCurrentPoneglyph] = useState(null);
-  const [chessBoardPosition, setChessBoardPosition] = useState({ left: 10, top: 60 }); // Default position at step 4
+  const [chessBoardPosition, setChessBoardPosition] = useState({ left: 450, top: 60 }); // Center position: (38-8)/2 * 30px = 450px
   
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
@@ -499,9 +499,9 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   // Update the chess board position based on rotation
   const handlePoneglyphAlignment = (rotation) => {
     // Calculate how many 30px moves based on rotation (30px per 30 degrees)
-    // Start from initial position and move left based on rotation
+    // Start from initial position (center) and move left based on rotation
     const moves = Math.floor(rotation / 30);
-    const leftOffset = 10 - (moves * 30); // Move 30px left for every 30° from initial position
+    const leftOffset = 450 - (moves * 30); // Move 30px left for every 30° from initial position (450px = center)
     
     setChessBoardPosition({ left: leftOffset, top: 60 });
   };
@@ -884,7 +884,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           {(step >= 4) && (
             <div 
               ref={chessBoardRef}
-              className={`chess-overlay-container ${step >= 4 ? 'fade-in' : ''}`} 
+              className="chess-overlay-container" 
               style={{ 
                 position: 'absolute',
                 top: `${chessBoardPosition.top}px`, 
