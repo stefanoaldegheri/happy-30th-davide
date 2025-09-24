@@ -149,12 +149,8 @@
 }
 
 .chess-overlay-container {
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-.chess-overlay-container.fade-in {
   opacity: 1;
+  transition: opacity 1s ease;
 }
 
 .chess-overlay-grid {
