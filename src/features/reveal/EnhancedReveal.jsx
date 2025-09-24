@@ -92,7 +92,7 @@ const EnhancedReveal = () => {
   const gridRef = useRef(null);
   const chessBoardRef = useRef(null);
   const [step, setStep] = useState(0); // 0: initial, 1: original text, 2: transition to cleaned text, 3: apply padding, 4: chess overlay, 5: poneglyph alignment, 6: revealed message
-  const [opacity, setOpacity] = useState(100); // Start with 100% opacity
+  
   const [revealedMessage, setRevealedMessage] = useState('');
   const [ocrResult, setOcrResult] = useState('');
   const [treasureOpened, setTreasureOpened] = useState(false);
@@ -400,7 +400,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     return message;
   };
   
-  // Check if a grid position is under a chess piece
+  // Check if a grid position is under a chess piece considering the actual chessboard position
   const isPositionUnderChessPiece = (textRow, textCol) => {
     // Define the positions of pieces that spell "davidesthirty"
     // Based on the key piece verification in final_verification.js
@@ -420,6 +420,11 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       'g5' // P (white pawn)
     ];
     
+    // Calculate where the chessboard is positioned based on the current chessBoardPosition.left
+    // Each column is 30px wide, so we can calculate the starting column from the left position
+    const leftOffset = chessBoardPosition.left;
+    const startingColumn = Math.round(leftOffset / 30);
+    
     // Check if the given text position matches any piece position
     for (const notation of piecePositions) {
       const position = chessPosition[notation];
@@ -427,9 +432,9 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         // Get the chess board coordinates for this piece
         const { row: pieceRow, col: pieceCol } = chessNotationToCoords(notation);
         
-        // Calculate the actual column position of the piece on the grid
-        // The chessboard is now at column 0
-        const actualPieceCol = pieceCol + chessFilterColumn;
+        // Calculate the actual column position of the piece on the text grid
+        // This is the starting column of the chessboard + the piece's column offset (0-7)
+        const actualPieceCol = startingColumn + pieceCol;
         
         // Check if the text character position matches the piece position
         if (textRow === pieceRow && textCol === actualPieceCol) {
@@ -441,104 +446,97 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     return false;
   };
   
-  // Handle slider change for chess overlay opacity (reversed: left=100%, right=0%)
-  const handleOpacityChange = (e) => {
-    // Reverse the value so left = 100% and right = 0%
-    const reversedValue = 100 - parseInt(e.target.value);
-    setOpacity(reversedValue);
-    
-    // Update the opacity of chess squares
-    if (chessBoardRef.current) {
-      const squares = chessBoardRef.current.querySelectorAll('.chess-square');
-      squares.forEach(square => {
-        // Only apply opacity change to squares with pieces
-        if (square.classList.contains('has-piece')) {
-          // Apply reversed opacity: when slider is at 0 (left), opacity is 100%
-          square.style.opacity = reversedValue / 100;
-        }
-        // Empty squares should remain fully opaque
-      });
-    }
-    
-    // Update the opacity and color of text characters
-    if (gridRef.current) {
-      const chars = gridRef.current.querySelectorAll('.grid-char');
-      chars.forEach(char => {
-        // Get the position of this character
-        const row = parseInt(char.dataset.currentRow);
-        const col = parseInt(char.dataset.currentCol);
-        
-        // Check if this character is under a chess piece
-        const isUnderPiece = isPositionUnderChessPiece(row, col);
-        
-        // Apply smooth transition for all characters
-        char.style.transition = 'opacity 0.3s ease, color 0.3s ease';
-        
-        // Red letters (under pieces) should stay fully opaque
-        // Other letters should fade as the slider moves left
-        if (isUnderPiece) {
-          char.style.opacity = 1; // Keep red letters fully visible
-          char.style.color = 'red';
-          char.style.fontWeight = 'bold';
-        } else {
-          // Other letters fade as the slider moves left
-          char.style.opacity = reversedValue / 100;
-          char.style.color = ''; // Reset to default color
-          char.style.fontWeight = ''; // Reset to default weight
-        }
-      });
-    }
-    
-    // When opacity is low enough, reveal the secret message
-    if (reversedValue < 30) {
-      const grid = textToPaddedGrid(ocrResult || originalText);
-      const secret = getSecretMessage(grid);
-      setRevealedMessage(secret.toLowerCase());
-    }
-  };
+  
   
   // Update the chess board position and opacity based on rotation
   const handlePoneglyphAlignment = (rotation) => {
-    // Calculate position based on rotation with the following requirements:
+    // For step 4: Calculate position based on rotation with the following requirements:
     // At 180°: a8 at column 14 (420px)
     // At 0°: a8 at column 8 (240px) 
     // At 360°: a8 at column 20 (600px)
     // Every 30° = one text square movement (30px)
-    
-    // Calculate movement from reference point (180° = starting position at 420px)
-    // Each 30° of rotation should move 1 square (30px)
-    const baseRotation = 180;  // Reference rotation where position is 420px
-    const basePosition = 420; // Reference position where a8 is at column 14
-    const degreesPerMove = 30; // Every 30 degrees is one square move
-    const pixelsPerMove = 30; // Each move is 30 pixels
-    
-    // Calculate how many moves from the base rotation - round to nearest to update at halfway point
-    const rotationDifference = rotation - baseRotation;
-    // Use Math.round to update when reaching halfway point between squares (e.g. at 165°, 135°, etc.)
-    const moveCount = Math.round(rotationDifference / degreesPerMove); 
-    const leftOffset = basePosition + (moveCount * pixelsPerMove);
-    
-    // Ensure chessboard doesn't go out of bounds (0 to 1140px for 38 columns)
-    // Chessboard is 8 squares * 30px = 240px wide
-    const clampedOffset = Math.max(0, Math.min(900, leftOffset)); // Keep within bounds: min 0, max 900 (1140-240)
-    
-    setChessBoardPosition({ left: clampedOffset, top: 0 });
+    if (step === 4) {
+      // Calculate movement from reference point (180° = starting position at 420px)
+      // Each 30° of rotation should move 1 square (30px)
+      const baseRotation = 180;  // Reference rotation where position is 420px
+      const basePosition = 420; // Reference position where a8 is at column 14
+      const degreesPerMove = 30; // Every 30 degrees is one square move
+      const pixelsPerMove = 30; // Each move is 30 pixels
+      
+      // Calculate how many moves from the base rotation - round to nearest to update at halfway point
+      const rotationDifference = rotation - baseRotation;
+      // Use Math.round to update when reaching halfway point between squares (e.g. at 165°, 135°, etc.)
+      const moveCount = Math.round(rotationDifference / degreesPerMove); 
+      const leftOffset = basePosition + (moveCount * pixelsPerMove);
+      
+      // Ensure chessboard doesn't go out of bounds (0 to 1140px for 38 columns)
+      // Chessboard is 8 squares * 30px = 240px wide
+      const clampedOffset = Math.max(0, Math.min(900, leftOffset)); // Keep within bounds: min 0, max 900 (1140-240)
+      
+      setChessBoardPosition({ left: clampedOffset, top: 0 });
+    } else if (step === 5) {
+      // In step 5: Don't move the chessboard, control opacity of chess squares with pieces and text characters under pieces
+      // Opacity goes from 100% at 0° to 0% at 360°
+      // Handle the case where wheel rotation crosses from just below 360° to 0° (which should be treated as 360°)
+      let effectiveRotation = rotation;
+      // When we're in step 5 and the user has rotated close to 360°, if the value goes back to 0, 
+      // we should treat it as 360° for opacity calculation
+      // We'll use the fact that in step 5, the user is expected to rotate from 0° towards 360°
+      // Calculate opacity: 100% at 0°, 0% at 360°
+      // For a value that has wrapped around: if we're close to 0° and we know the user was rotating toward 360°,
+      // treat it as 360°
+      const opacity = 1 - (effectiveRotation / 360);
+      
+      if (chessBoardRef.current) {
+        // Update opacity of individual squares that have pieces (only these should change opacity)
+        const squares = chessBoardRef.current.querySelectorAll('.chess-square.has-piece');
+        squares.forEach(square => {
+          // Apply the calculated opacity based on rotation
+          square.style.opacity = opacity;
+        });
+      }
+      
+      // Also update opacity of text characters that are under chess pieces
+      if (gridRef.current) {
+        const chars = gridRef.current.querySelectorAll('.grid-char');
+        chars.forEach(char => {
+          // Get the position of this character
+          const row = parseInt(char.dataset.currentRow);
+          const col = parseInt(char.dataset.currentCol);
+          
+          // Check if this character is under a chess piece
+          const isUnderPiece = isPositionUnderChessPiece(row, col);
+          
+          // Apply opacity change only to characters under chess pieces
+          if (isUnderPiece) {
+            char.style.opacity = opacity; // Match the opacity of the chess piece above it
+            char.style.color = 'red';
+            char.style.fontWeight = 'bold';
+          } else {
+            // Keep other characters fully opaque and in default style
+            char.style.opacity = 1;
+            char.style.color = '';
+            char.style.fontWeight = '';
+          }
+        });
+      }
+    }
     
     // Calculate opacity based on current step and rotation:
-    let opacity = 1; // Default to fully opaque
+    let mainOpacity = 1; // Default to fully opaque
     
     if (step === 3) {
       // Step 3: Chessboard remains hidden (should not happen with new logic)
-      opacity = 0; // Keep chessboard hidden in step 3 if reached
+      mainOpacity = 0; // Keep chessboard hidden in step 3 if reached
     } else if (step === 4) {
       // Step 4: Fully opaque to allow sliding
-      opacity = 1; // Fully opaque in step 4 to allow sliding
+      mainOpacity = 1; // Fully opaque in step 4 to allow sliding
     } else if (step === 5) {
-      // Step 5: Opacity controlled by slider, not rotation
-      opacity = chessBoardOpacity; // Use the slider-controlled opacity
+      // Step 5: Main container stays fully opaque, individual elements controlled by the function above
+      mainOpacity = 1; // Main container stays at 1, individual elements are controlled separately
     }
     
-    setChessBoardOpacity(opacity);
+    setChessBoardOpacity(mainOpacity);
   };
   
   // Handle poneglyph alignment instruction (Step 5)
@@ -637,8 +635,10 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         }
         break;
       case 5:
-        // Step 5 → target 0° = control opacity to reveal message
-        // When rotation reaches 0°, reveal the final message
+        // Step 5 → target 0° = control opacity of chessboard squares with pieces to reveal message
+        // Opacity goes from 100% at 0° to 0% at 360°
+        handlePoneglyphAlignment(angle);  // This function adjusts opacity of squares with pieces based on rotation
+        // When rotation reaches 0° (or 360°), reveal the final message
         if (Math.abs(angle) < 5 || Math.abs(angle - 360) < 5) {
           const grid = textToPaddedGrid(ocrResult || originalText);
           const secret = getSecretMessage(grid);
@@ -924,7 +924,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                opacity: chessBoardOpacity // Use dynamic opacity based on current state
+                opacity: step === 5 ? 1 : chessBoardOpacity // Keep opacity at 1 for step 5, use dynamic opacity for other steps
               }}
             >
               {renderChessOverlay()}
@@ -1020,25 +1020,10 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               Rotate to 180° (show chessboard)
             </button>
           )}
-          {(step >= 5) && (
-            <>
-              <button className="continue-button" onClick={() => setStep(1)}>
-                Restart Process
-              </button>
-              <div className="slider-container">
-                <label htmlFor="opacity-slider">Adjust Filter Opacity (Left: Hide Letters, Right: Show Letters):</label>
-                <input
-                  id="opacity-slider"
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={100 - opacity} // Reverse the value for display
-                  onChange={handleOpacityChange}
-                  className="opacity-slider"
-                />
-                <span className="slider-value">{opacity}%</span>
-              </div>
-            </>
+          {step === 5 && (
+            <button className="continue-button" onClick={() => setStep(1)}>
+              Restart Process
+            </button>
           )}
         </div>
         
