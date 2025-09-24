@@ -1,13 +1,21 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import EnhancedReveal from './EnhancedReveal';
 
-const RevealModule = () => {
-  const navigate = useNavigate();
-  
-  // For now, we'll use the enhanced reveal component
-  // In the future, we can add more logic here if needed
-  return <EnhancedReveal />;
-};
+const RevealModule = () => (
+  <div
+    style={{
+      background: 'rgba(188, 161, 88, 0.2)', /* Aged brass with transparency */
+      borderRadius: '15px',
+      border: '2px solid #bca158', /* Aged brass border */
+      padding: '20px',
+      minHeight: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <EnhancedReveal />
+  </div>
+);
 
 export default RevealModule;

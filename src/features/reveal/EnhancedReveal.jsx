@@ -1236,7 +1236,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     if (step < 1) return null; // Don't render anything until the first rotation occurs (step 1+)
 
     return (
-      <div className="step-all-transitions">
+      <div className="step-all-transitions" style={{ marginTop: '60px' }}>
         {/* Remove step titles - captions above text grid are no longer needed */}
 
         <div
@@ -1367,6 +1367,10 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        background: 'rgba(188, 161, 88, 0.2)', /* Aged brass with transparency */
+        borderRadius: '15px',
+        border: '2px solid #bca158', /* Aged brass border */
+        padding: '20px',
       }}
     >
       <ShipWheel
