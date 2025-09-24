@@ -97,7 +97,7 @@ const EnhancedReveal = () => {
   const [ocrResult, setOcrResult] = useState('');
   const [treasureOpened, setTreasureOpened] = useState(false);
   const [currentPoneglyph, setCurrentPoneglyph] = useState(null);
-  const [chessBoardPosition, setChessBoardPosition] = useState({ left: 450, top: 60 }); // Center position: (38-8)/2 * 30px = 450px
+  const [chessBoardPosition, setChessBoardPosition] = useState({ left: 420, top: 0 }); // Start at column 14 (14*30=420px) to align a8 with R in row 0 position 14
   const [chessBoardOpacity, setChessBoardOpacity] = useState(0); // Start with 0 opacity for fade-in effect
   
   // Static configuration for padding values
@@ -499,31 +499,44 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   
   // Update the chess board position and opacity based on rotation
   const handlePoneglyphAlignment = (rotation) => {
-    // Calculate how many 30px moves based on rotation (30px per 30 degrees)
-    // Start from initial position (center) and move left based on rotation
-    const moves = Math.floor(rotation / 30);
-    const leftOffset = 450 - (moves * 30); // Move 30px left for every 30° from initial position (450px = center)
+    // Calculate position based on rotation with the following requirements:
+    // At 180°: a8 at column 14 (420px)
+    // At 0°: a8 at column 8 (240px) 
+    // At 360°: a8 at column 20 (600px)
+    // Every 30° = one text square movement (30px)
     
-    setChessBoardPosition({ left: leftOffset, top: 60 });
+    // Calculate movement from reference point (180° = starting position at 420px)
+    // Each 30° of rotation should move 1 square (30px)
+    const baseRotation = 180;  // Reference rotation where position is 420px
+    const basePosition = 420; // Reference position where a8 is at column 14
+    const degreesPerMove = 30; // Every 30 degrees is one square move
+    const pixelsPerMove = 30; // Each move is 30 pixels
     
-    // Calculate opacity based on rotation:
-    // From 270° or more: 0% opacity (fully transparent)
-    // To 180° or less: 100% opacity (fully opaque)
-    let opacity = 0;
-    if (rotation <= 180) {
-      // Fully opaque at 180° or less
-      opacity = 1;
-    } else if (rotation >= 270) {
-      // Fully transparent at 270° or more
-      opacity = 0;
-    } else {
-      // Interpolate between 180° (100% opacity) and 270° (0% opacity)
-      // opacity = 1 - ((rotation - 180) / (270 - 180))
-      opacity = 1 - ((rotation - 180) / 90);
+    // Calculate how many moves from the base rotation - round to nearest to update at halfway point
+    const rotationDifference = rotation - baseRotation;
+    // Use Math.round to update when reaching halfway point between squares (e.g. at 165°, 135°, etc.)
+    const moveCount = Math.round(rotationDifference / degreesPerMove); 
+    const leftOffset = basePosition + (moveCount * pixelsPerMove);
+    
+    // Ensure chessboard doesn't go out of bounds (0 to 1140px for 38 columns)
+    // Chessboard is 8 squares * 30px = 240px wide
+    const clampedOffset = Math.max(0, Math.min(900, leftOffset)); // Keep within bounds: min 0, max 900 (1140-240)
+    
+    setChessBoardPosition({ left: clampedOffset, top: 0 });
+    
+    // Calculate opacity based on current step and rotation:
+    let opacity = 1; // Default to fully opaque
+    
+    if (step === 3) {
+      // Step 3: Chessboard remains hidden (should not happen with new logic)
+      opacity = 0; // Keep chessboard hidden in step 3 if reached
+    } else if (step === 4) {
+      // Step 4: Fully opaque to allow sliding
+      opacity = 1; // Fully opaque in step 4 to allow sliding
+    } else if (step === 5) {
+      // Step 5: Opacity controlled by slider, not rotation
+      opacity = chessBoardOpacity; // Use the slider-controlled opacity
     }
-    
-    // Add console log for debugging
-    console.log(`Rotation: ${rotation}°, Calculated opacity: ${opacity}`);
     
     setChessBoardOpacity(opacity);
   };
@@ -572,18 +585,22 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             setTreasureOpened(false);
             animateToPaddedText();
             // Stay in step 3 and wait for the next rotation to 180°
-          }, 5000);
+          }, 1000); // Reduced from 5000 to 1000ms (1 second)
         }
         break;
       case 3:
-        // Step 3 → target 180° = show chessboard at column 0
+        // Step 3 → target 180° = show chessboard with fade-in effect
         if (angle === 180) {
           setStep(4);
           setTreasureOpened(true);
           setTimeout(() => {
             setTreasureOpened(false);
+            // Make sure the chessboard starts at the correct center position
+            setChessBoardPosition({ left: 420, top: 0 }); // Set center position before fade-in
+            // Update the chess board opacity to 1 to make it visible
+            setChessBoardOpacity(1);
             if (chessBoardRef.current) {
-              // Animate chess board dissolve effect
+              // Animate chess board fade-in effect
               const squares = chessBoardRef.current.querySelectorAll('.chess-square');
               squares.forEach((square, index) => {
                 const rowIndex = Math.floor(index / 8);
@@ -602,16 +619,16 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 }
               });
             }
-            // Stay in step 4 and wait for the next rotation to 340°
-          }, 5000);
+            // Stay in step 4 and wait for rotation to 340° to continue to next step
+          }, 100); // Short delay to allow state update before fade-in
         }
         break;
       case 4:
-        // Step 4 → target 340° = slide chessboard
+        // Step 4 → target range 16°-44° = slide chessboard
         // Slide chessboard as wheel rotates
-        handlePoneglyphInstruction(angle);  // This function adjusts chessboard position based on rotation
-        // When target reached (340°), move to next step  
-        if (Math.abs(angle - 340) < 5) {  // Within 5° of target
+        handlePoneglyphAlignment(angle);  // This function adjusts chessboard position based on rotation
+        // When target reached (between 16°-44°), move to next step  
+        if (angle >= 16 && angle <= 44) {  // Within the target range
           setStep(5);
           setTreasureOpened(true);
           setTimeout(() => {
@@ -806,7 +823,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   
   // Render the chess overlay
   const renderChessOverlay = () => {
-    // Show chessboard at column 0 (relative to container) as requested
+    // Show chessboard at column 0 (relative to text grid) as requested
     const startColumn = 0;
     
     return (
@@ -823,7 +840,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             left: 0
           }}>
             {Array.from({ length: 8 }).map((_, colIndex) => {
-              // Calculate the actual column based on startColumn
+              // Calculate the actual column based on startColumn - but since we want chessboard at column 0,
+              // the container position already accounts for the offset, so chess squares should start at left: 0
               const actualCol = colIndex + startColumn;
               const notation = String.fromCharCode(97 + colIndex) + (8 - rowIndex); // a-h, 8-1
               const position = chessPosition[notation];
@@ -839,7 +857,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                     opacity: 1, // Always start with 100% opacity
                     transition: 'opacity 0.3s ease', // Faster transition for better responsiveness
                     position: 'absolute',
-                    left: `${actualCol * 30}px` // Position each square at its correct column (30px to match character width)
+                    left: `${actualCol * 30}px`, // Position each square at its correct column relative to the chessboard container
+                    top: 0
                   }}
                 >
                   {hasPiece && (
@@ -879,18 +898,15 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         {/* Show step title based on current step */}
         {step === 1 && <h2>Step 1: Rotate to 180° to show text</h2>}
         {step === 2 && <h2>Step 2: Rotate to 90° to remove punctuation</h2>}
-        {step === 3 && <h2>Step 3: Rotate to 270° to apply padding</h2>}
-        {step === 4 && <h2>Step 4: Rotate to 180° to show chessboard at column 0</h2>}
-        {step === 5 && <h2>Step 5: Rotate to 340° to slide chessboard</h2>}
-        {step === 6 && <h2>Step 6: Control opacity to reveal message</h2>}
+        {step === 3 && <h2>Step 3: Rotate to 180° to make chessboard appear with fade-in</h2>}
+        {step === 4 && <h2>Step 4: Slide chessboard, rotate to 16°-44° range to continue</h2>}
+        {step === 5 && <h2>Step 5: Rotate to 0° to control opacity and reveal message</h2>}
+        {step === 6 && <h2>Step 6: Message revealed</h2>}
         
         <div style={{ 
           position: 'relative', 
           width: '1140px', /* 38 columns * 30px = 1140px */
           margin: '20px 0',
-          background: 'rgba(0, 0, 0, 0.3)',
-          borderRadius: '8px',
-          padding: '20px',
           textAlign: 'left'
         }}>
           {/* Render the text grid - always visible and reusing same elements */}
@@ -902,7 +918,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             {renderTextGrid()}
           </div>
           
-          {/* Render the chess overlay on top for step 4+ */}
+          {/* Render the chess overlay on top for step 4+ (chessboard appears after completing step 3, in step 4) */}
           {(step >= 4) && (
             <div 
               ref={chessBoardRef}
@@ -914,7 +930,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                opacity: chessBoardOpacity // Use dynamic opacity based on wheel position
+                opacity: chessBoardOpacity // Use dynamic opacity based on current state
               }}
             >
               {renderChessOverlay()}
@@ -931,8 +947,6 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                marginLeft: '-20px',
-                marginTop: '-20px',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -971,8 +985,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               setTimeout(() => {
                 setTreasureOpened(false);
                 animateToPaddedText();
-                setTimeout(() => setStep(4), 2000);
-              }, 5000);
+                // Stay in step 3 - no auto transition, user needs to rotate to 180° for step 4
+              }, 1000); // Reduced from 5000 to 1000ms (1 second)
             }}>
               Rotate to 270°
             </button>
@@ -983,11 +997,14 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               setTreasureOpened(true);
               setTimeout(() => {
                 setTreasureOpened(false);
+                // Make sure the chessboard starts at the correct center position
+                setChessBoardPosition({ left: 420, top: 0 }); // Set center position before fade-in
+                // Update the chess board opacity to 1 to make it visible
+                setChessBoardOpacity(1);
                 if (chessBoardRef.current) {
-                  // Animate chess board dissolve effect
+                  // Animate chess board fade-in effect
                   const squares = chessBoardRef.current.querySelectorAll('.chess-square');
                   squares.forEach((square, index) => {
-                    // Only animate squares in the filter area (columns 6-13, rows 0-7)
                     const rowIndex = Math.floor(index / 8);
                     const colIndex = index % 8;
                     
@@ -1004,10 +1021,9 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                     }
                   });
                 }
-                setStep(5);
-              }, 5000);
+              }, 100); // Short delay to allow state update before fade-in
             }}>
-              Rotate to 180°
+              Rotate to 180° (show chessboard)
             </button>
           )}
           {(step >= 5) && (
@@ -1068,9 +1084,10 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           step === 0 ? 180 :    // Step 0 → target 180° = show text
           step === 1 ? 90 :     // Step 1 → target 90° = remove punctuation  
           step === 2 ? 270 :    // Step 2 → target 270° = apply padding
-          step === 3 ? 180 :    // Step 3 → target 180° = show chessboard at column 0
-          step === 4 ? 340 :    // Step 4 → target 340 = slide chessboard
-          0                     // For step 5, 6, and beyond: target 0°
+          step === 3 ? 180 :    // Step 3 → target 180° = show chessboard with fade-in
+          step === 4 ? 30 :     // Step 4 → target 30° = any value from 16 to 44
+          step === 5 ? 30 :     // Step 5 → target 30° = hide target position
+          30                    // For step 6 and beyond: target 30° = hide target position
         }
         step={step}
         onPoneglyphAlignment={handlePoneglyphAlignment}

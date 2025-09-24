@@ -166,12 +166,16 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   // Handle mouse up
   const handleMouseUp = () => {
     if (isDragging) {
-      // For step 4 (sliding chessboard), check if close to 340°
+      // For step 4 (sliding chessboard), check if in range 16°-44°
       // For step 5 (opacity control), check if close to 0°
       if (step === 4) {
-        if (Math.abs(rotation - 340) < 5) {
-          // If properly aligned, trigger the next step
-          onRotationChange && onRotationChange(340);
+        if (rotation >= 16 && rotation <= 44) {
+          // If properly aligned to the range 16°-44°, trigger the next step
+          onRotationChange && onRotationChange(rotation);
+        } else {
+          // For sliding, the user can rotate freely, but the important position is in range 16°-44°
+          // If not in the range, still call poneglyph alignment to update position
+          onPoneglyphAlignment && onPoneglyphAlignment(rotation);
         }
       } else if (step === 5) {
         // For step 5, check if aligned close to 0° or 360°
@@ -195,12 +199,16 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   // Handle touch end
   const handleTouchEnd = () => {
     if (isDragging) {
-      // For step 4 (sliding chessboard), check if close to 340°
+      // For step 4 (sliding chessboard), check if in range 16°-44°
       // For step 5 (opacity control), check if close to 0°
       if (step === 4) {
-        if (Math.abs(rotation - 340) < 5) {
-          // If properly aligned, trigger the next step
-          onRotationChange && onRotationChange(340);
+        if (rotation >= 16 && rotation <= 44) {
+          // If properly aligned to the range 16°-44°, trigger the next step
+          onRotationChange && onRotationChange(rotation);
+        } else {
+          // For sliding, the user can rotate freely, but the important position is in range 16°-44°
+          // If not in the range, still call poneglyph alignment to update position
+          onPoneglyphAlignment && onPoneglyphAlignment(rotation);
         }
       } else if (step === 5) {
         // For step 5, check if aligned close to 0° or 360°
@@ -250,9 +258,9 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
       case 3:
         return "Step 3: Rotate to 180° to show chessboard at column 0";
       case 4:
-        return "Step 4: Rotate to 340° to slide chessboard";
+        return "Step 4: Slide chessboard, rotate to 16°-44° range to continue";
       case 5:
-        return "Step 5: Rotate to 0° to control opacity and reveal message";
+        return "Step 5: Adjust opacity using wheel rotation";
       case 6:
         return "Step 6: Message revealed";
       default:
@@ -272,11 +280,11 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
       case 3:
         return 180; // Step 3 → target 180° = show chessboard at column 0
       case 4:
-        return 340; // Step 4 → target 340° = slide chessboard
+        return 30;  // Step 4 → target 30° = any value from 16 to 44, no specific target
       case 5:
-        return 0;   // Step 5 → target 0° = control opacity to reveal message
+        return 30;  // Step 5 → target 30° = any value from 16 to 44, no specific target
       case 6:
-        return 0;   // Step 6: final step
+        return 30;  // Step 6 → target 30° = any value from 16 to 44, no specific target
       default:
         return targetAngle;
     }
@@ -308,7 +316,7 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           <button onClick={() => { setRotation(180); onRotationChange(180); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 180°</button>
           <button onClick={() => { setRotation(90); onRotationChange(90); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 90°</button>
           <button onClick={() => { setRotation(270); onRotationChange(270); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 270°</button>
-          <button onClick={() => { setRotation(340); onRotationChange(340); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 340°</button>
+          <button onClick={() => { setRotation(30); onRotationChange(30); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 30°</button>
           <button onClick={() => { setRotation(0); onRotationChange(0); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 0°</button>
         </div>
       </div>
@@ -318,8 +326,8 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           <p>{getInstruction()}</p>
         </div>
         <div className="ship-wheel-position">
-          <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>
-          <p>Target Position: <span>{getTargetAngle()}°</span></p>
+          {step < 4 && <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>}
+          {step < 4 && <p>Target Position: <span>{getTargetAngle()}°</span></p>}
         </div>
       </div>
     </div>
