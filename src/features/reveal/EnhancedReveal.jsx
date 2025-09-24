@@ -1161,6 +1161,17 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 String.fromCharCode(97 + colIndex) + (8 - rowIndex); // a-h, 8-1
               const position = chessPosition[notation];
               const hasPiece = position && !position.empty && position.piece;
+              
+              // Check if this is one of the special squares: d8, e8, d1, e1
+              // d8: rowIndex=0, colIndex=3 (d=3rd letter, 0-indexed)
+              // e8: rowIndex=0, colIndex=4 (e=4th letter, 0-indexed)
+              // d1: rowIndex=7, colIndex=3 (d=3rd letter, 0-indexed)
+              // e1: rowIndex=7, colIndex=4 (e=4th letter, 0-indexed)
+              const isSpecialSquare =
+                (rowIndex === 0 && colIndex === 3) || // d8
+                (rowIndex === 0 && colIndex === 4) || // e8
+                (rowIndex === 7 && colIndex === 3) || // d1
+                (rowIndex === 7 && colIndex === 4);   // e1
 
               return (
                 <div
@@ -1176,6 +1187,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                     position: 'absolute',
                     left: `${actualCol * 30}px`, // Position each square at its correct column relative to the chessboard container
                     top: 0,
+                    backgroundColor: isSpecialSquare ? 'red' : undefined, // Red background for special squares
                   }}
                 >
                   {hasPiece && (

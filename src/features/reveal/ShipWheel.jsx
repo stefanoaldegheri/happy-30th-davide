@@ -268,9 +268,9 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
       case 3:
         return "Step 4: Set a new course for 180° to plot our next move!";
       case 4:
-        return "Step 5: A wee nudge to 30° to decipher the ancient markings!";
+        return "Step 5: Line up the ancient runes to make sense o' this map!";
       case 5:
-        return "Step 6: Now, bring the wheel to 355° and behold the treasure";
+        return "Step 6: Now, bring the wheel beyond the horizon and behold the treasure!";
       case 6:
         return "Step 7: TREASURE FOUND! Yo ho ho, ye bilge rats! We're rich!";
       default:
