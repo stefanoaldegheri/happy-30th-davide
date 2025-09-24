@@ -327,7 +327,7 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           <button onClick={() => { setRotation(90); onRotationChange(90); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 90°</button>
           <button onClick={() => { setRotation(270); onRotationChange(270); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 270°</button>
           <button onClick={() => { setRotation(30); onRotationChange(30); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 30°</button>
-          <button onClick={() => { setRotation(0); onRotationChange(0); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 0°</button>
+          <button onClick={() => { setRotation(355); onRotationChange(355); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 355°</button>
         </div>
       </div>
       <div className="ship-wheel-right">

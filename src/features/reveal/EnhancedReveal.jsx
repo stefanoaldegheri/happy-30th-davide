@@ -105,8 +105,8 @@ const EnhancedReveal = () => {
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
   
-  // Chess filter column parameter (0-indexed) - now at column 0
-  const chessFilterColumn = 0;
+  // Chess filter column parameter (0-indexed) - chessboard starts at column 14 (14*30=420px)
+  const chessFilterColumn = 14;
   
   // Hardcoded message from OCR (as requested)
   const originalText = `DAVIDE, YOUR NEW ERA DAWNS.
@@ -141,6 +141,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     
     // When step reaches 6, animate the letters to form a word (only once)
     if (step === 6 && !animationCompleted) {
+      console.log("Starting step 6 animation");
       setAnimationCompleted(true);
       // Delay to ensure state is set before running animation
       setTimeout(() => {
@@ -164,7 +165,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           }
         });
         
-        // Get the secret word - it should be "davidesthirty" based on the pieces
+        console.log("Letters to move:", redLettersToMove);
         const secretWord = revealedMessage || "davidesthirty";
         
         // Calculate the final positions for each letter in the 4th row (index 3) from column 20 to 34
@@ -180,7 +181,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           letterPositions.push({ x: finalX, y: finalY });
         }
         
-        // Move each red letter from its original grid position to the new position in row 4
+        console.log("Letter positions:", letterPositions);
         redLettersToMove.forEach((letterData, index) => {
           if (index < letterPositions.length) {
             // Calculate the original position relative to the grid container
@@ -189,6 +190,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
             
             // Get the final position for this letter
             const finalPos = letterPositions[index];
+            
+            console.log(`Animating letter ${letterData.text} from (${originalLeft}, ${originalTop}) to (${finalPos.x}, ${finalPos.y})`);
             
             // Animate the letter from its original grid position to the new position in row 4
             gsap.to(letterData.element, {
@@ -778,7 +781,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         if (Math.abs(angle - 355) < 5) {
           const grid = textToPaddedGrid(ocrResult || originalText);
           const secret = getSecretMessage(grid);
-          // Capture the current revealed state to preserve when transitioning to step 6
+          // Set the revealed message and capture the current revealed state to preserve when transitioning to step 6
+          setRevealedMessage(secret);
           setRevealedState({
             rotation: angle
           });
