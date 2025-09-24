@@ -822,7 +822,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         }
         break;
       case 5:
-        // Step 5 → target 355° = control opacity of chessboard squares with pieces to reveal message
+        // Step 5 → target 355° = control opacity of chessboard squares
         // Opacity goes from 100% at 5° to 0% at 355° (adjusted from 0° to 360° to avoid confusion)
         handlePoneglyphAlignment(angle); // This function adjusts opacity of squares with pieces based on rotation
         // When rotation reaches 355° (adjusted target to avoid 0°/360° confusion), reveal the final message
@@ -878,8 +878,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: Math.ceil(maxCols/2) -1 }).map((_, colIndex) => (
          <img
            key={`top-tbox-${colIndex}`}
-           src="/images/treasure_box_256.png"
-           alt="Treasure Box"
+           src={step >= 3 && colIndex === 6 ? "/images/poneglyph_256.png" : "/images/treasure_box_256.png"}
+           alt={step >= 3 && colIndex === 6 ? "Poneglyph" : "Treasure Box"}
            style={{
              position: 'absolute',
              top: '-60px', /* Move up by half the treasure box height (60/2) */
@@ -895,8 +895,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: Math.ceil(maxCols/2) -1 }).map((_, colIndex) => (
          <img
            key={`bottom-tbox-${colIndex}`}
-           src="/images/treasure_box_256.png"
-           alt="Treasure Box"
+           src={step >= 4 && colIndex === 6 ? '/images/poneglyph_256.png' : '/images/treasure_box_256.png'}
+           alt={step >= 4 && colIndex === 6 ? 'Poneglyph' : 'Treasure Box'}
            style={{
              position: 'absolute',
              top: '240px', /* Align with bottom of grid plus half treasure box height (240 + 30) */
@@ -912,8 +912,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: 6 }).map((_, rowIndex) => (
          <img
            key={`left-tbox-${rowIndex}`}
-           src="/images/treasure_box_256.png"
-           alt="Treasure Box"
+           src={step >= 1 && rowIndex === 2 ? '/images/poneglyph_256.png' : '/images/treasure_box_256.png'}
+           alt={step >= 1 && rowIndex === 2 ? 'Poneglyph' : 'Treasure Box'}
            style={{
              position: 'absolute',
              top: `${rowIndex * 60 -60}px`,
@@ -929,8 +929,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: 6 }).map((_, rowIndex) => (
          <img
            key={`right-tbox-${rowIndex}`}
-           src="/images/treasure_box_256.png"
-           alt="Treasure Box"
+           src={step >= 2 && rowIndex === 2 ? '/images/poneglyph_256.png' : '/images/treasure_box_256.png'}
+           alt={step >= 2 && rowIndex === 2 ? 'Poneglyph' : 'Treasure Box'}
            style={{
              position: 'absolute',
              top: `${rowIndex * 60-60}px`,
@@ -1431,11 +1431,11 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           )}
         </div>
         <style>{`
-          @keyframes poneglyphFadeIn {
-            0% { opacity: 0; transform: scale(0.5); }
-            100% { opacity: 1; transform: scale(1); }
-          }
-        `}</style>
+        @keyframes poneglyphFadeIn {
+          0% { opacity: 0; transform: scale(0.5); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
       </div>
     );
   };
@@ -1490,91 +1490,21 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               }}
             />
           ) : treasureOpened ? ( // Otherwise, show treasure chest if opened
-            <img
-              src="/images/treasure_box_256.png"
-              alt="Treasure Chest"
-              className="treasure-chest-image"
-              style={{
-                position: 'absolute',
-                width: '100px',
-                height: '100px',
-                zIndex: 100,
-                // Position the treasure chest based on the current step
-                left:
-                  step === 0
-                    ? 'auto'
-                    : step === 1
-                    ? '0px'
-                    : step === 2
-                    ? '0px'
-                    : step === 3
-                    ? 'auto'
-                    : step === 4
-                    ? '50%'
-                    : step === 5
-                    ? '50%'
-                    : '50%',
-                right:
-                  step === 2
-                    ? 'auto'
-                    : step === 3
-                    ? '0px'
-                    : step === 4
-                    ? 'auto'
-                    : step === 5
-                    ? 'auto'
-                    : 'auto',
-                top:
-                  step === 4
-                    ? 'auto'
-                    : step === 3
-                    ? 'auto'
-                    : step === 0
-                    ? '50%'
-                    : step === 1
-                    ? '50%'
-                    : step === 2
-                    ? '50%'
-                    : step === 5
-                    ? '50%'
-                    : '50%',
-                bottom:
-                  step === 3
-                    ? '0px'
-                    : step === 4
-                    ? 'auto'
-                    : step === 5
-                    ? 'auto'
-                    : 'auto',
-                transform:
-                  step === 0
-                    ? 'translate(-50%, -50%)'
-                    : step === 1
-                    ? 'translateY(-50%)'
-                    : step === 2
-                    ? 'translateX(-50%)'
-                    : step === 3
-                    ? 'translateY(-50%)'
-                    : step === 4
-                    ? 'translateX(-50%)'
-                    : step === 5
-                    ? 'translate(-50%, -50%)'
-                    : 'translate(-50%, -50%)',
-                animation: 'fadeInOut 5s forwards',
-              }}
-            />
+            null
           ) : null}
         </div>
       )}
       {renderStepContent()}
-      <style>{`
+      <style>
+        {`
         @keyframes fadeInOut {
           0% { opacity: 0; transform: scale(0.5); }
           20% { opacity: 1; transform: scale(1); }
           80% { opacity: 1; transform: scale(1); }
           100% { opacity: 0; transform: scale(0.5); }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 };
