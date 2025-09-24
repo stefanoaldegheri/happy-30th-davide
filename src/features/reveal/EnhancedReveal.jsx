@@ -99,6 +99,7 @@ const EnhancedReveal = () => {
   const [currentPoneglyph, setCurrentPoneglyph] = useState(null);
   const [chessBoardPosition, setChessBoardPosition] = useState({ left: 420, top: 0 }); // Start at column 14 (14*30=420px) to align a8 with R in row 0 position 14
   const [chessBoardOpacity, setChessBoardOpacity] = useState(0); // Start with 0 opacity for fade-in effect
+  const [revealedState, setRevealedState] = useState({}); // Store the final revealed state when moving to step 6
   
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
@@ -135,6 +136,14 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     if (step === 4) {
       // When we reach the chess overlay step, we might want to do some initialization
       // but we don't want to automatically animate the chess board
+    }
+    
+    // When step reaches 6, animate the letters to form a word
+    if (step === 6) {
+      // Delay to ensure state is set before running animation
+      setTimeout(() => {
+        animateLettersToWord();
+      }, 50);
     }
     
     // Remove the automatic transition from step 1 to step 2 since this is now handled by wheel rotation
@@ -452,8 +461,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   const handlePoneglyphAlignment = (rotation) => {
     // For step 4: Calculate position based on rotation with the following requirements:
     // At 180°: a8 at column 14 (420px)
-    // At 0°: a8 at column 8 (240px) 
-    // At 360°: a8 at column 20 (600px)
+    // At 5°: a8 at column 8 (240px) 
+    // At 355°: a8 at column 20 (600px)
     // Every 30° = one text square movement (30px)
     if (step === 4) {
       // Calculate movement from reference point (180° = starting position at 420px)
@@ -475,17 +484,28 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       
       setChessBoardPosition({ left: clampedOffset, top: 0 });
     } else if (step === 5) {
-      // In step 5: Don't move the chessboard, control opacity of chess squares with pieces and text characters under pieces
-      // Opacity goes from 100% at 0° to 0% at 360°
-      // Handle the case where wheel rotation crosses from just below 360° to 0° (which should be treated as 360°)
-      let effectiveRotation = rotation;
-      // Calculate opacity: 100% at 0°, 0% at 360°
-      const pieceOpacity = 1 - (effectiveRotation / 360);
-      // The text characters under pieces should have inverse opacity (when piece is transparent, text is visible)
-      const textOpacity = 1 - pieceOpacity; // When piece opacity is 0%, text opacity is 100%
+      // In step 5: Don't move the chessboard, control opacity of chess squares with pieces and text characters
+      // Opacity goes from 100% at 5° to 0% at 355° for chess pieces
+      // Calculate opacity: 100% at 5°, 0% at 355° for chess pieces
+      // Map rotation from 5° to 355° to percentage from 100% to 0%
+      // We want pieceOpacity to go from 1 (at 5°) to 0 (at 355°)
+      let pieceOpacity;
+      if (rotation <= 5) {
+        pieceOpacity = 1;  // At start of range (5°), pieces are 100% visible
+      } else if (rotation >= 355) {
+        pieceOpacity = 0;  // At end of range (355°), pieces are 0% visible
+      } else {
+        // Linear interpolation: from 1 at 5° to 0 at 355°
+        pieceOpacity = 1 - ((rotation - 5) / (355 - 5));  // (rotation - 5) / 350
+      }
+      
+      // Text characters not under pieces should fade out as pieces become more transparent
+      const otherTextOpacity = pieceOpacity; // Other text fades with chess pieces
+      // Text characters under pieces should become more visible as pieces become more transparent
+      const underPieceTextOpacity = 1 - pieceOpacity; // Inverse: when pieces are 0% opaque, text under them is 100% visible
       
       if (chessBoardRef.current) {
-        // Update opacity of individual squares that have pieces (only these should change opacity)
+        // Update opacity of individual squares that have pieces
         const squares = chessBoardRef.current.querySelectorAll('.chess-square.has-piece');
         squares.forEach(square => {
           // Apply the calculated opacity based on rotation
@@ -493,7 +513,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         });
       }
       
-      // Also update opacity of text characters that are under chess pieces
+      // Update opacity of ALL text characters
       if (gridRef.current) {
         const chars = gridRef.current.querySelectorAll('.grid-char');
         chars.forEach(char => {
@@ -504,15 +524,58 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           // Check if this character is under a chess piece
           const isUnderPiece = isPositionUnderChessPiece(row, col);
           
-          // Apply opacity change only to characters under chess pieces
           if (isUnderPiece) {
-            // Text under pieces should have inverse opacity: when pieces are 0% opaque, text is 100% visible
-            char.style.opacity = Math.max(0, Math.min(1, textOpacity)); // Clamp between 0 and 1
+            // Text under pieces should become more visible as chess pieces become transparent
+            char.style.opacity = Math.max(0, Math.min(1, underPieceTextOpacity));
             char.style.color = 'red';
             char.style.fontWeight = 'bold';
           } else {
-            // Keep other characters fully opaque and in default style
-            char.style.opacity = 1;
+            // Other text should fade out as chess pieces become transparent
+            char.style.opacity = Math.max(0, Math.min(1, otherTextOpacity));
+            char.style.color = '';
+            char.style.fontWeight = '';
+          }
+        });
+      }
+    } else if (step === 6) {
+      // In step 6: Maintain the final revealed state (independent of rotation)
+      // At the moment the secret was revealed (355°), pieces became invisible and text under them became visible
+      // So in step 6, chess pieces should be invisible (0% opacity) and text under them should be visible (100% opacity)
+      
+      if (chessBoardRef.current) {
+        // Set chess pieces to 0 opacity so they are completely invisible in step 6
+        const squares = chessBoardRef.current.querySelectorAll('.chess-square.has-piece');
+        squares.forEach(square => {
+          square.style.opacity = 0; // Hide chess pieces completely in step 6
+        });
+        
+        // Set empty chess squares to full opacity so they remain visible in step 6
+        const emptySquares = chessBoardRef.current.querySelectorAll('.chess-square:not(.has-piece)');
+        emptySquares.forEach(square => {
+          square.style.opacity = 1; // Keep empty squares visible in step 6
+        });
+      }
+      
+      // Update opacity of ALL text characters for step 6
+      if (gridRef.current) {
+        const chars = gridRef.current.querySelectorAll('.grid-char');
+        chars.forEach(char => {
+          // Get the position of this character
+          const row = parseInt(char.dataset.currentRow);
+          const col = parseInt(char.dataset.currentCol);
+          
+          // Check if this character is under a chess piece
+          const isUnderPiece = isPositionUnderChessPiece(row, col);
+          
+          if (isUnderPiece) {
+            // Text that was under pieces should be fully visible in step 6
+            char.style.opacity = 1; // 100% visible
+            // Keep red and bold for text that was under pieces
+            char.style.color = 'red';
+            char.style.fontWeight = 'bold';
+          } else {
+            // Other text should be invisible in step 6
+            char.style.opacity = 0; // 0% visible
             char.style.color = '';
             char.style.fontWeight = '';
           }
@@ -529,8 +592,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     } else if (step === 4) {
       // Step 4: Fully opaque to allow sliding
       mainOpacity = 1; // Fully opaque in step 4 to allow sliding
-    } else if (step === 5) {
-      // Step 5: Main container stays fully opaque, individual elements controlled by the function above
+    } else if (step === 5 || step === 6) {
+      // Step 5 and 6: Main container stays fully opaque, individual elements controlled by the function above
       mainOpacity = 1; // Main container stays at 1, individual elements are controlled separately
     }
     
@@ -540,8 +603,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   // Handle poneglyph alignment instruction (Step 5)
   const handlePoneglyphInstruction = (rotation) => {
     handlePoneglyphAlignment(rotation);
-    // If rotation is close to 0° (within 5°), show poneglyph
-    if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
+    // If rotation is close to 355° (within 5°), show poneglyph
+    if ((Math.abs(rotation - 355) < 5) && step < 6) {
       setCurrentPoneglyph('/images/poneglyph_256.png');
     }
     // Once poneglyph is shown, it stays visible
@@ -633,22 +696,28 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         }
         break;
       case 5:
-        // Step 5 → target 0° = control opacity of chessboard squares with pieces to reveal message
-        // Opacity goes from 100% at 0° to 0% at 360°
+        // Step 5 → target 355° = control opacity of chessboard squares with pieces to reveal message
+        // Opacity goes from 100% at 5° to 0% at 355° (adjusted from 0° to 360° to avoid confusion)
         handlePoneglyphAlignment(angle);  // This function adjusts opacity of squares with pieces based on rotation
-        // When rotation reaches 0° (or 360°), reveal the final message
-        if (Math.abs(angle) < 5 || Math.abs(angle - 360) < 5) {
+        // When rotation reaches 355° (adjusted target to avoid 0°/360° confusion), reveal the final message
+        if (Math.abs(angle - 355) < 5) {
           const grid = textToPaddedGrid(ocrResult || originalText);
           const secret = getSecretMessage(grid);
-          setRevealedMessage(secret.toLowerCase());
+          // Capture the current revealed state to preserve when transitioning to step 6
+          setRevealedState({
+            rotation: angle
+          });
           setStep(6); // Move to final step
         }
         break;
       case 6:
-        // Final step - message revealed
-        break;
-      default:
-        break;
+          // Final step - maintain opacity from step 5 and animate letters to form a word
+          // The opacity control from step 5 continues to apply the same settings
+          handlePoneglyphAlignment(angle);
+          // No further rotation changes in step 6
+          break;
+        default:
+          break;
     }
   };
   
@@ -852,7 +921,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                   style={{ 
                     width: '30px',
                     height: '30px',
-                    opacity: 1, // Always start with 100% opacity
+                    opacity: hasPiece ? 1 : 1, // Always start with 100% opacity, individual opacities controlled by handlePoneglyphAlignment
                     transition: 'opacity 0.3s ease', // Faster transition for better responsiveness
                     position: 'absolute',
                     left: `${actualCol * 30}px`, // Position each square at its correct column relative to the chessboard container
@@ -922,7 +991,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                opacity: step === 5 ? 1 : chessBoardOpacity // Keep opacity at 1 for step 5, use dynamic opacity for other steps
+                opacity: chessBoardOpacity // Use dynamic opacity for all steps
               }}
             >
               {renderChessOverlay()}
@@ -1027,13 +1096,38 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         
         {/* Show revealed message when opacity is low enough */}
         <div className={`revealed-message ${revealedMessage ? 'show' : ''}`}>
-          {revealedMessage && (
+          {revealedMessage && step < 6 && (
             <>
               <p>Secret revealed: <strong>{revealedMessage}</strong></p>
               <button className="continue-button" onClick={() => navigate('/final')}>
                 Continue to Final Gift
               </button>
             </>
+          )}
+          {/* In step 6, show animated letters forming the word */}
+          {step === 6 && (
+            <div style={{ 
+              marginTop: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center' 
+            }}>
+              <p>Secret revealed: </p>
+              <div id="secret-word-container" style={{ 
+                display: 'flex', 
+                marginLeft: '10px',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: 'red'
+              }}>
+                {/* The animated letters will be positioned here by the animation */}
+              </div>
+            </div>
+          )}
+          {step === 6 && (
+            <button className="continue-button" onClick={() => navigate('/final')}>
+              Continue to Final Gift
+            </button>
           )}
         </div>
         <style>{`
@@ -1044,6 +1138,62 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         `}</style>
       </div>
     );
+  };
+
+  // Function to animate visible letters to form a word
+  const animateLettersToWord = () => {
+    if (gridRef.current) {
+      // Get all characters that were under chess pieces (red, bold characters)
+      const chars = gridRef.current.querySelectorAll('.grid-char');
+      const charsToAnimate = [];
+      
+      chars.forEach(char => {
+        const row = parseInt(char.dataset.currentRow);
+        const col = parseInt(char.dataset.currentCol);
+        const isUnderPiece = isPositionUnderChessPiece(row, col);
+        const isRedAndVisible = char.style.color === 'red' && parseFloat(char.style.opacity || '1') > 0;
+        
+        if (isUnderPiece && char.textContent.trim() !== '' && isRedAndVisible) {
+          // This character was under a chess piece and should be part of the final word
+          charsToAnimate.push({
+            element: char,
+            originalLeft: parseInt(char.style.left) || (col * 30),
+            originalTop: parseInt(char.style.top) || (row * 30),
+            charText: char.textContent
+          });
+        }
+      });
+      
+      // Get the secret word - it should be "davidesthirty" based on the pieces
+      const secretWord = revealedMessage || "davidesthirty";
+      
+      // Position the characters to form the word in a single row below the grid
+      charsToAnimate.forEach((charData, index) => {
+        if (index < secretWord.length) {
+          // Position each character in sequence to spell the secret word
+          // Using the original text content to make sure it matches the expected sequence
+          const targetLeft = 200 + (index * 36); // 36px spacing with some left margin
+          const targetTop = 300; // Position below the grid (240px height + some margin)
+          
+          // Animate the character from its original position to the new position in the word
+          gsap.to(charData.element, {
+            x: targetLeft - charData.originalLeft,
+            y: targetTop - charData.originalTop,
+            fontSize: '24px',
+            fontWeight: 'bold',
+            duration: 2,
+            ease: "power2.out",
+            delay: index * 0.2, // Stagger the animation
+            onComplete: () => {
+              // Ensure the character stays in the new position after animation
+              charData.element.style.position = 'absolute';
+              charData.element.style.left = targetLeft + 'px';
+              charData.element.style.top = targetTop + 'px';
+            }
+          });
+        }
+      });
+    }
   };
 
   return (
@@ -1063,8 +1213,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           step === 2 ? 270 :    // Step 2 → target 270° = apply padding
           step === 3 ? 180 :    // Step 3 → target 180° = show chessboard with fade-in
           step === 4 ? 30 :     // Step 4 → target 30° = any value from 16 to 44
-          step === 5 ? 30 :     // Step 5 → target 30° = hide target position
-          30                    // For step 6 and beyond: target 30° = hide target position
+          step === 5 ? 355 :    // Step 5 → target 355° = reveal secret by adjusting opacity to 0%
+          355                   // For step 6 and beyond: stay at 355°
         }
         step={step}
         onPoneglyphAlignment={handlePoneglyphAlignment}

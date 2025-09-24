@@ -92,8 +92,13 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     // Calculate new rotation with constraints
     let newRotation = rotation + delta;
     
-    // Constrain rotation to 0-360 range (stop at boundaries)
-    newRotation = Math.max(0, Math.min(360, newRotation));
+    if (step === 5) {
+      // In step 5, constrain rotation to 5-355 range (stop at boundaries)
+      newRotation = Math.max(5, Math.min(355, newRotation));
+    } else {
+      // For other steps, constrain rotation to 0-360 range (stop at boundaries)
+      newRotation = Math.max(0, Math.min(360, newRotation));
+    }
     
     setRotation(newRotation);
     setCurrentAngle(newRotation);
@@ -143,8 +148,13 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     // Calculate new rotation with constraints
     let newRotation = rotation + delta;
     
-    // Constrain rotation to 0-360 range (stop at boundaries)
-    newRotation = Math.max(0, Math.min(360, newRotation));
+    if (step === 5) {
+      // In step 5, constrain rotation to 5-355 range (stop at boundaries)
+      newRotation = Math.max(5, Math.min(355, newRotation));
+    } else {
+      // For other steps, constrain rotation to 0-360 range (stop at boundaries)
+      newRotation = Math.max(0, Math.min(360, newRotation));
+    }
     
     setRotation(newRotation);
     setCurrentAngle(newRotation);
@@ -167,7 +177,7 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   const handleMouseUp = () => {
     if (isDragging) {
       // For step 4 (sliding chessboard), check if in range 16°-44°
-      // For step 5 (opacity control), check if close to 0°
+      // For step 5 (opacity control), check if close to 355°
       if (step === 4) {
         if (rotation >= 16 && rotation <= 44) {
           // If properly aligned to the range 16°-44°, trigger the next step
@@ -178,10 +188,10 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           onPoneglyphAlignment && onPoneglyphAlignment(rotation);
         }
       } else if (step === 5) {
-        // For step 5, check if aligned close to 0° or 360°
-        if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
+        // For step 5, check if aligned close to 355° (old: 0° or 360°)
+        if (Math.abs(rotation - 355) < 5) {
           // If properly aligned, trigger the reveal action
-          onRotationChange && onRotationChange(0); // or 360
+          onRotationChange && onRotationChange(355);
         } else {
           // If not properly aligned, keep the rotation as is for poneglyph alignment
           onRotationChange && onRotationChange(rotation);
@@ -195,12 +205,12 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     }
     setIsDragging(false);
   };
-  
+
   // Handle touch end
   const handleTouchEnd = () => {
     if (isDragging) {
       // For step 4 (sliding chessboard), check if in range 16°-44°
-      // For step 5 (opacity control), check if close to 0°
+      // For step 5 (opacity control), check if close to 355°
       if (step === 4) {
         if (rotation >= 16 && rotation <= 44) {
           // If properly aligned to the range 16°-44°, trigger the next step
@@ -211,10 +221,10 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           onPoneglyphAlignment && onPoneglyphAlignment(rotation);
         }
       } else if (step === 5) {
-        // For step 5, check if aligned close to 0° or 360°
-        if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
+        // For step 5, check if aligned close to 355° (old: 0° or 360°)
+        if (Math.abs(rotation - 355) < 5) {
           // If properly aligned, trigger the reveal action
-          onRotationChange && onRotationChange(0); // or 360
+          onRotationChange && onRotationChange(355);
         } else {
           // If not properly aligned, keep the rotation as is for poneglyph alignment
           onRotationChange && onRotationChange(rotation);
@@ -260,7 +270,7 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
       case 4:
         return "Step 4: Slide chessboard, rotate to 16°-44° range to continue";
       case 5:
-        return "Step 5: Adjust opacity using wheel rotation";
+        return "Step 5: Adjust opacity using wheel rotation, target 355°";
       case 6:
         return "Step 6: Message revealed";
       default:
@@ -282,9 +292,9 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
       case 4:
         return 30;  // Step 4 → target 30° = any value from 16 to 44, no specific target
       case 5:
-        return 30;  // Step 5 → target 30° = any value from 16 to 44, no specific target
+        return 355;  // Step 5 → target 355° = reveal secret by adjusting opacity to 0%
       case 6:
-        return 30;  // Step 6 → target 30° = any value from 16 to 44, no specific target
+        return 355;  // Step 6 → target 355° = stay at revealed position
       default:
         return targetAngle;
     }
@@ -328,6 +338,8 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
         <div className="ship-wheel-position">
           {step < 4 && <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>}
           {step < 4 && <p>Target Position: <span>{getTargetAngle()}°</span></p>}
+          {(step === 4 || step === 5) && <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>}
+          {(step === 4 || step === 5) && <p>Target Position: <span>{getTargetAngle()}°</span></p>}
         </div>
       </div>
     </div>
