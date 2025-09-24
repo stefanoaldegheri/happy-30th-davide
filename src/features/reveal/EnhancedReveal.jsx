@@ -479,20 +479,17 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       // Opacity goes from 100% at 0° to 0% at 360°
       // Handle the case where wheel rotation crosses from just below 360° to 0° (which should be treated as 360°)
       let effectiveRotation = rotation;
-      // When we're in step 5 and the user has rotated close to 360°, if the value goes back to 0, 
-      // we should treat it as 360° for opacity calculation
-      // We'll use the fact that in step 5, the user is expected to rotate from 0° towards 360°
       // Calculate opacity: 100% at 0°, 0% at 360°
-      // For a value that has wrapped around: if we're close to 0° and we know the user was rotating toward 360°,
-      // treat it as 360°
-      const opacity = 1 - (effectiveRotation / 360);
+      const pieceOpacity = 1 - (effectiveRotation / 360);
+      // The text characters under pieces should have inverse opacity (when piece is transparent, text is visible)
+      const textOpacity = 1 - pieceOpacity; // When piece opacity is 0%, text opacity is 100%
       
       if (chessBoardRef.current) {
         // Update opacity of individual squares that have pieces (only these should change opacity)
         const squares = chessBoardRef.current.querySelectorAll('.chess-square.has-piece');
         squares.forEach(square => {
           // Apply the calculated opacity based on rotation
-          square.style.opacity = opacity;
+          square.style.opacity = Math.max(0, Math.min(1, pieceOpacity)); // Clamp between 0 and 1
         });
       }
       
@@ -509,7 +506,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           
           // Apply opacity change only to characters under chess pieces
           if (isUnderPiece) {
-            char.style.opacity = opacity; // Match the opacity of the chess piece above it
+            // Text under pieces should have inverse opacity: when pieces are 0% opaque, text is 100% visible
+            char.style.opacity = Math.max(0, Math.min(1, textOpacity)); // Clamp between 0 and 1
             char.style.color = 'red';
             char.style.fontWeight = 'bold';
           } else {
