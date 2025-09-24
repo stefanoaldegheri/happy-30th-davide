@@ -1323,109 +1323,15 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           )}
         </div>
 
-        {/* Navigation buttons for manual control */}
-        <div className="navigation-buttons">
-          {step === 1 && (
-            <button
-              className="continue-button"
-              onClick={() => {
-                setStep(2);
-                setTreasureOpened(true);
-                setTimeout(() => {
-                  setTreasureOpened(false);
-                  animateToCleanedText();
-                  setTimeout(() => setStep(3), 2000);
-                }, 5000);
-              }}
-            >
-              A sharp turn to 90° to clear the decks!
-            </button>
-          )}
-          {step === 2 && (
-            <button
-              className="continue-button"
-              onClick={() => {
-                setStep(3);
-                setTreasureOpened(true);
-                setTimeout(() => {
-                  setTreasureOpened(false);
-                  animateToPaddedText();
-                  // Stay in step 3 - no auto transition, user needs to rotate to 180° for step 4
-                }, 1000); // Reduced from 5000 to 1000ms (1 second)
-              }}
-            >
-              Swing 'er about to 270° and give the cargo some sea room!
-            </button>
-          )}
-          {step === 3 && (
-            <button
-              className="continue-button"
-              onClick={() => {
-                setStep(4);
-                setTreasureOpened(true);
-                setTimeout(() => {
-                  setTreasureOpened(false);
-                  // Make sure the chessboard starts at the correct center position
-                  setChessBoardPosition({ left: 420, top: 0 }); // Set center position before fade-in
-                  // Update the chess board opacity to 1 to make it visible
-                  setChessBoardOpacity(1);
-                  if (chessBoardRef.current) {
-                    // Animate chess board fade-in effect
-                    const squares =
-                      chessBoardRef.current.querySelectorAll('.chess-square');
-                    squares.forEach((square, index) => {
-                      const rowIndex = Math.floor(index / 8);
-                      const colIndex = index % 8;
-
-                      if (
-                        rowIndex >= 0 &&
-                        rowIndex <= 7 &&
-                        colIndex >= 0 &&
-                        colIndex <= 7
-                      ) {
-                        gsap.fromTo(
-                          square,
-                          { opacity: 0 },
-                          {
-                            opacity: 1,
-                            duration: 1,
-                            delay: rowIndex * 0.1 + colIndex * 0.05,
-                            ease: 'power2.out',
-                          }
-                        );
-                      }
-                    });
-                  }
-                }, 100); // Short delay to allow state update before fade-in
-              }}
-            >
-              Set a new course for 180° to plot our next move!
-            </button>
-          )}
-          {step === 5 && (
-            <button className="continue-button" onClick={() => setStep(1)}>
-              Restart Process
-            </button>
-          )}
-        </div>
-
         {/* Show revealed message when opacity is low enough */}
         <div className={`revealed-message ${revealedMessage ? 'show' : ''}`}>
           {revealedMessage && step < 6 && (
-            <>
-              <p>
-                Secret revealed: <strong>{revealedMessage}</strong>
-              </p>
-              <button
-                className="continue-button"
-                onClick={() => navigate('/final')}
-              >
-                Continue to Final Gift
-              </button>
-            </>
+            <p>
+              Secret revealed: <strong>{revealedMessage}</strong>
+            </p>
           )}
           {/* In step 6, the letters are displayed in the dedicated container above */}
-          {step === 6 && (
+          {step === 6 && animationCompleted && (
             <div
               style={{
                 display: 'flex',
