@@ -1249,7 +1249,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 }, 5000);
               }}
             >
-              Rotate to 90°
+              A sharp turn to 90° to clear the decks!
             </button>
           )}
           {step === 2 && (
@@ -1265,7 +1265,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 }, 1000); // Reduced from 5000 to 1000ms (1 second)
               }}
             >
-              Rotate to 270°
+              Swing 'er about to 270° and give the cargo some sea room!
             </button>
           )}
           {step === 3 && (
@@ -1310,7 +1310,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 }, 100); // Short delay to allow state update before fade-in
               }}
             >
-              Rotate to 180° (show chessboard)
+              Set a new course for 180° to plot our next move!
             </button>
           )}
           {step === 5 && (
@@ -1378,18 +1378,18 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         onRotationChange={handleWheelRotation}
         targetAngle={
           step === 0
-            ? 180 // Step 0 → target 180° = show text
+            ? 180 // Heave 'er 'round to 180°, me hearties!
             : step === 1
-            ? 90 // Step 1 → target 90° = remove punctuation
+            ? 90 // A sharp turn to 90° to clear the decks!
             : step === 2
-            ? 270 // Step 2 → target 270° = apply padding
+            ? 270 // Swing 'er about to 270° and give the cargo some sea room!
             : step === 3
-            ? 180 // Step 3 → target 180° = show chessboard with fade-in
+            ? 180 // Set a new course for 180° to plot our next move!
             : step === 4
-            ? 30 // Step 4 → target 30° = any value from 16 to 44
+            ? 30 // A wee nudge to 30° to decipher the ancient markings!
             : step === 5
-            ? 355 // Step 5 → target 355° = reveal secret by adjusting opacity to 0%
-            : 355 // For step 6 and beyond: stay at 355°
+            ? 355 // Now, bring the wheel to 355° and behold the treasure
+            : 355 // Now, bring the wheel to 355° and behold the treasure
         }
         step={step}
         onPoneglyphAlignment={handlePoneglyphAlignment}

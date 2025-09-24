@@ -260,19 +260,19 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   const getInstruction = () => {
     switch (step) {
       case 0:
-        return "Step 0: Rotate to 180° to show text";
+        return "Step 1: Heave 'er 'round to 180°, me hearties!";
       case 1:
-        return "Step 1: Rotate to 90° to remove punctuation";
+        return "Step 2: A sharp turn to 90° to clear the decks!";
       case 2:
-        return "Step 2: Rotate to 270° to apply padding";
+        return "Step 3: Swing 'er about to 270° and give the cargo some sea room!";
       case 3:
-        return "Step 3: Rotate to 180° to show chessboard at column 0";
+        return "Step 4: Set a new course for 180° to plot our next move!";
       case 4:
-        return "Step 4: Slide chessboard, rotate to 16°-44° range to continue";
+        return "Step 5: A wee nudge to 30° to decipher the ancient markings!";
       case 5:
-        return "Step 5: Adjust opacity using wheel rotation, target 355°";
+        return "Step 6: Now, bring the wheel to 355° and behold the treasure";
       case 6:
-        return "Step 6: Message revealed";
+        return "Step 7: TREASURE FOUND! Yo ho ho, ye bilge rats! We're rich!";
       default:
         return "Rotate wheel to target position";
     }
@@ -282,19 +282,19 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   const getTargetAngle = () => {
     switch (step) {
       case 0:
-        return 180; // Step 0 → target 180° = show text
+        return 180; // Heave 'er 'round to 180°, me hearties!
       case 1:
-        return 90;  // Step 1 → target 90° = remove punctuation
+        return 90; // A sharp turn to 90° to clear the decks!
       case 2:
-        return 270; // Step 2 → target 270° = apply padding
+        return 270; // Swing 'er about to 270° and give the cargo some sea room!
       case 3:
-        return 180; // Step 3 → target 180° = show chessboard at column 0
+        return 180; // Set a new course for 180° to plot our next move!
       case 4:
-        return 30;  // Step 4 → target 30° = any value from 16 to 44, no specific target
+        return 30; // A wee nudge to 30° to decipher the ancient markings!
       case 5:
-        return 355;  // Step 5 → target 355° = reveal secret by adjusting opacity to 0%
+        return 355; // Now, bring the wheel to 355° and behold the treasure
       case 6:
-        return 355;  // Step 6 → target 355° = stay at revealed position
+        return 355; // Now, bring the wheel to 355° and behold the treasure
       default:
         return targetAngle;
     }
