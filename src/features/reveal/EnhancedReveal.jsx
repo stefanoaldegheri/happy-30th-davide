@@ -102,8 +102,8 @@ const EnhancedReveal = () => {
   // Static configuration for padding values
   const paddingConfig = [0, 4, 7, 11, 10, 9, 6, 10];
   
-  // Chess filter column parameter (0-indexed)
-  const chessFilterColumn = 10;
+  // Chess filter column parameter (0-indexed) - now at column 0
+  const chessFilterColumn = 0;
   
   // Hardcoded message from OCR (as requested)
   const originalText = `DAVIDE, YOUR NEW ERA DAWNS.
@@ -122,12 +122,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       setOcrResult(storedResult);
     }
     
-    // Start the animation sequence
-    const timer = setTimeout(() => {
-      setStep(1);
-    }, 100);
-    
-    return () => clearTimeout(timer);
+    // Don't start the animation sequence automatically - wait for first wheel rotation
+    // The step will remain at 0 until the user rotates the wheel
   }, []);
   
   // Effect to handle step transitions (manual only)
@@ -139,6 +135,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       // When we reach the chess overlay step, we might want to do some initialization
       // but we don't want to automatically animate the chess board
     }
+    
+    // Remove the automatic transition from step 1 to step 2 since this is now handled by wheel rotation
   }, [step]);
   
   // Animate transition from original text to cleaned text
@@ -220,55 +218,71 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     }
   };
   
-  // Convert text to original grid format (preserving all characters and positions)
+  // Convert text to original grid format (8 rows x 38 columns, with all row letters starting at column 0)
   const textToOriginalGrid = (text) => {
     // Split text into lines
     const lines = text.split('\n');
     
-    // Create grid with actual line content
+    // Create grid with 8 rows and 38 columns, all letters starting at column 0
     const grid = [];
-    for (let row = 0; row < lines.length; row++) {
-      const line = lines[row];
+    for (let row = 0; row < 8; row++) {
+      const line = row < lines.length ? lines[row] : '';
       const gridRow = [];
+      
+      // Add all characters from the line
       for (let col = 0; col < line.length; col++) {
         gridRow.push(line[col]);
       }
+      
+      // Fill the rest of the row with spaces to make it 38 columns wide
+      for (let col = line.length; col < 38; col++) {
+        gridRow.push(' ');
+      }
+      
       grid.push(gridRow);
     }
     
     return grid;
   };
   
-  // Convert text to cleaned grid format (removing spaces and punctuation)
+  // Convert text to cleaned grid format (removing spaces and punctuation, 8 rows x 38 columns)
   const textToCleanedGrid = (text) => {
     // Split text into lines
     const lines = text.split('\n');
     
-    // Create grid with cleaned content
+    // Create grid with 8 rows and 38 columns, cleaned content starting at column 0
     const grid = [];
-    for (let row = 0; row < lines.length; row++) {
-      const line = lines[row];
+    for (let row = 0; row < 8; row++) {
+      const line = row < lines.length ? lines[row] : '';
       // Remove spaces and punctuation, keep only A-Z and 0-9
       const cleanLine = line.replace(/[^A-Z0-9]/g, '');
       const gridRow = [];
+      
+      // Add cleaned characters starting at column 0
       for (let col = 0; col < cleanLine.length; col++) {
         gridRow.push(cleanLine[col]);
       }
+      
+      // Fill the rest of the row with spaces to make it 38 columns wide
+      for (let col = cleanLine.length; col < 38; col++) {
+        gridRow.push(' ');
+      }
+      
       grid.push(gridRow);
     }
     
     return grid;
   };
   
-  // Convert text to padded grid format (applying padding to cleaned text)
+  // Convert text to padded grid format (applying padding to cleaned text, 8 rows x 38 columns)
   const textToPaddedGrid = (text) => {
     // Split text into lines
     const lines = text.split('\n');
     
-    // Create grid with cleaned and padded content
+    // Create grid with 8 rows and 38 columns, cleaned and padded content
     const grid = [];
-    for (let row = 0; row < Math.min(lines.length, 8); row++) {
-      const line = lines[row];
+    for (let row = 0; row < 8; row++) {
+      const line = row < lines.length ? lines[row] : '';
       // Remove spaces and punctuation, keep only A-Z and 0-9
       const cleanLine = line.replace(/[^A-Z0-9]/g, '');
       
@@ -277,9 +291,16 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       const paddedLine = ' '.repeat(padding) + cleanLine;
       
       const gridRow = [];
+      // Add padded characters
       for (let col = 0; col < paddedLine.length; col++) {
         gridRow.push(paddedLine[col]);
       }
+      
+      // Fill the rest of the row with spaces to make it 38 columns wide
+      for (let col = paddedLine.length; col < 38; col++) {
+        gridRow.push(' ');
+      }
+      
       grid.push(gridRow);
     }
     
@@ -367,7 +388,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       const position = chessPosition[notation];
       if (position && !position.empty && position.piece) {
         const { row, col } = chessNotationToCoords(notation);
-        // Adjust column based on chessFilterColumn parameter
+        // Adjust column based on chessFilterColumn parameter (now at column 0)
         const adjustedCol = col + chessFilterColumn;
         if (row < grid.length && adjustedCol < grid[row].length) {
           message += grid[row][adjustedCol];
@@ -406,9 +427,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         const { row: pieceRow, col: pieceCol } = chessNotationToCoords(notation);
         
         // Calculate the actual column position of the piece on the grid
-        // The chessboard is offset by chessFilterColumn
-        // Adjust by -1 to correct for column offset issue
-        const actualPieceCol = pieceCol + chessFilterColumn - 1;
+        // The chessboard is now at column 0
+        const actualPieceCol = pieceCol + chessFilterColumn;
         
         // Check if the text character position matches the piece position
         if (textRow === pieceRow && textCol === actualPieceCol) {
@@ -492,60 +512,58 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     // If rotation is close to 0° (within 5°), show poneglyph
     if (Math.abs(rotation) < 5 || Math.abs(rotation - 360) < 5) {
       setCurrentPoneglyph('/images/poneglyph_256.png');
-    } else if (currentPoneglyph) {
-      // Clear poneglyph if we're off target
-      setCurrentPoneglyph(null);
     }
+    // Once poneglyph is shown, it stays visible
   };
   
   // Handle wheel rotation changes
   const handleWheelRotation = (angle) => {
     switch (step) {
       case 0:
-        // Step 0: Move to 180° - Initial text display
-        setStep(1);
+        // Step 0 → target 180° = show text
+        if (angle === 180) {
+          setStep(1);
+          setTreasureOpened(true);
+          setTimeout(() => {
+            setTreasureOpened(false);
+          }, 5000);
+        }
         break;
       case 1:
-        // Step 1: Move to 90° - open treasure chest west and fade in text
-        setTreasureOpened(true);
-        setTimeout(() => {
-          setTreasureOpened(false);
+        // Step 1 → target 90° = remove punctuation
+        if (angle === 90) {
           setStep(2);
-        }, 5000);
+          setTreasureOpened(true);
+          setTimeout(() => {
+            setTreasureOpened(false);
+            animateToCleanedText();
+            // Stay in step 2 and wait for the next rotation to 270°
+          }, 5000);
+        }
         break;
       case 2:
-        // Step 2: Move to 270° - open treasure chest east and remove punctuation
-        setTreasureOpened(true);
-        setTimeout(() => {
-          setTreasureOpened(false);
-          if (step === 2) {
-            animateToCleanedText();
-            setTimeout(() => setStep(3), 2000);
-          }
-        }, 5000);
+        // Step 2 → target 270° = apply padding
+        if (angle === 270) {
+          setStep(3);
+          setTreasureOpened(true);
+          setTimeout(() => {
+            setTreasureOpened(false);
+            animateToPaddedText();
+            // Stay in step 3 and wait for the next rotation to 180°
+          }, 5000);
+        }
         break;
       case 3:
-        // Step 3: Move to 180° - open treasure chest south and apply padding
-        setTreasureOpened(true);
-        setTimeout(() => {
-          setTreasureOpened(false);
-          if (step === 3) {
-            animateToPaddedText();
-            setTimeout(() => setStep(4), 2000);
-          }
-        }, 5000);
-        break;
-      case 4:
-        // Step 4: Move to 0° - open treasure chest north and show chessboard
-        setTreasureOpened(true);
-        setTimeout(() => {
-          setTreasureOpened(false);
-          if (step === 4) {
-            // Animate chess board dissolve effect
+        // Step 3 → target 180° = show chessboard at column 0
+        if (angle === 180) {
+          setStep(4);
+          setTreasureOpened(true);
+          setTimeout(() => {
+            setTreasureOpened(false);
             if (chessBoardRef.current) {
+              // Animate chess board dissolve effect
               const squares = chessBoardRef.current.querySelectorAll('.chess-square');
               squares.forEach((square, index) => {
-                // Only animate squares in the filter area (columns 6-13, rows 0-7)
                 const rowIndex = Math.floor(index / 8);
                 const colIndex = index % 8;
                 
@@ -562,34 +580,35 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 }
               });
             }
-            setStep(5);
-          }
-        }, 5000);
-        break;
-      case 5:
-        // Step 5: Align poneglyph - chessboard moves as wheel rotates
-        // When target reached (0°), show poneglyph
-        if (angle === 0 || Math.abs(angle - 360) < 5) {
-          setTreasureOpened(true);
-          setCurrentPoneglyph('/images/poneglyph_256.png');
-          setTimeout(() => {
-            setTreasureOpened(false);
-            setStep(6);
+            // Stay in step 4 and wait for the next rotation to 340°
           }, 5000);
-        } else {
-          // If releasing at different position, snap back to initial position
-          setChessBoardPosition({ left: 10, top: 60 }); // Reset to initial position
-          // Don't change step, just reset the chessboard position
         }
         break;
-      case 6:
-        // Step 6: Apply opacity filter gradually from current position (opacity 100) to 360° (full transparent)
-        // When rotation reaches 360°, reveal the final message
-        if (angle === 360) {
+      case 4:
+        // Step 4 → target 340° = slide chessboard
+        // Slide chessboard as wheel rotates
+        handlePoneglyphInstruction(angle);  // This function adjusts chessboard position based on rotation
+        // When target reached (340°), move to next step  
+        if (Math.abs(angle - 340) < 5) {  // Within 5° of target
+          setStep(5);
+          setTreasureOpened(true);
+          setTimeout(() => {
+            setTreasureOpened(false);
+          }, 5000);
+        }
+        break;
+      case 5:
+        // Step 5 → target 0° = control opacity to reveal message
+        // When rotation reaches 0°, reveal the final message
+        if (Math.abs(angle) < 5 || Math.abs(angle - 360) < 5) {
           const grid = textToPaddedGrid(ocrResult || originalText);
           const secret = getSecretMessage(grid);
           setRevealedMessage(secret.toLowerCase());
+          setStep(6); // Move to final step
         }
+        break;
+      case 6:
+        // Final step - message revealed
         break;
       default:
         break;
@@ -609,7 +628,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     const paddedGrid = textToPaddedGrid(ocrResult || originalText);
     
     return (
-      <div className="text-grid" ref={gridRef} style={{ position: 'relative', height: '240px', width: 'fit-content' }}>
+      <div className="text-grid" ref={gridRef} style={{ position: 'relative', height: '240px', width: '1140px' }}> {/* 38 columns * 30px = 1140px */}
         {originalGrid.map((row, rowIndex) => {
           // Determine which grid to use based on current step
           let displayRow = row;
@@ -680,12 +699,12 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     const grid = textToCleanedGrid(ocrResult || originalText);
     const paddingMapping = getPaddingMapping(ocrResult || originalText);
     
-    // Calculate grid dimensions
-    const maxCols = Math.max(...grid.map(row => row.length), 1);
-    const gridHeight = Math.max(grid.length, 1) * 30;
+    // Calculate grid dimensions (8 rows, 38 columns)
+    const maxCols = 38;
+    const gridHeight = 8 * 30;
     
     return (
-      <div className="text-grid" ref={gridRef} style={{ position: 'relative', height: `${gridHeight}px`, textAlign: 'left', margin: '0 auto 0 0' }}>
+      <div className="text-grid" ref={gridRef} style={{ position: 'relative', height: `${gridHeight}px`, width: '1140px', textAlign: 'left', margin: '0 auto 0 0' }}>
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid-row" style={{ position: 'absolute', top: `${rowIndex * 30}px`, left: 0 }}>
             {row.map((char, colIndex) => {
@@ -732,7 +751,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     const grid = textToPaddedGrid(ocrResult || originalText);
     
     return (
-      <div className="text-grid" ref={gridRef} style={{ position: 'relative', height: '240px', width: 'fit-content' }}>
+      <div className="text-grid" ref={gridRef} style={{ position: 'relative', height: '240px', width: '1140px' }}>
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid-row" style={{ position: 'absolute', top: `${rowIndex * 30}px`, left: 0 }}>
             {row.map((char, colIndex) => {
@@ -765,8 +784,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   
   // Render the chess overlay
   const renderChessOverlay = () => {
-    // Start from column defined by chessFilterColumn parameter
-    const startColumn = chessFilterColumn;
+    // Show chessboard at column 0 as requested
+    const startColumn = 0;
     
     return (
       <div style={{ 
@@ -831,21 +850,21 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   
   // Render the step content with updated chess board position
   const renderStepContent = () => {
-    if (step < 1) return null;
+    if (step < 1) return null; // Don't render anything until the first rotation occurs (step 1+)
     
     return (
       <div className="step-all-transitions">
         {/* Show step title based on current step */}
-        {step === 1 && <h2>Rotate to 90°: Open treasure chest west</h2>}
-        {step === 2 && <h2>Rotate to 270°: Open treasure chest east and remove punctuation</h2>}
-        {step === 3 && <h2>Rotate to 180°: Open treasure chest south and apply padding</h2>}
-        {step === 4 && <h2>Rotate to 0°: Open treasure chest north and show chessboard</h2>}
-        {step === 5 && <h2>Align poneglyph: slide chessboard to target position</h2>}
-        {step === 6 && <h2>Apply opacity filter: from current position to 360°</h2>}
+        {step === 1 && <h2>Step 1: Rotate to 180° to show text</h2>}
+        {step === 2 && <h2>Step 2: Rotate to 90° to remove punctuation</h2>}
+        {step === 3 && <h2>Step 3: Rotate to 270° to apply padding</h2>}
+        {step === 4 && <h2>Step 4: Rotate to 180° to show chessboard at column 0</h2>}
+        {step === 5 && <h2>Step 5: Rotate to 340° to slide chessboard</h2>}
+        {step === 6 && <h2>Step 6: Control opacity to reveal message</h2>}
         
         <div style={{ 
           position: 'relative', 
-          width: 'fit-content',
+          width: '1140px', /* 38 columns * 30px = 1140px */
           margin: '20px 0',
           background: 'rgba(0, 0, 0, 0.3)',
           borderRadius: '8px',
@@ -855,7 +874,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           {/* Render the text grid - always visible and reusing same elements */}
           <div style={{ 
             position: 'relative', 
-            width: 'fit-content',
+            width: '1140px', /* 38 columns * 30px = 1140px */
             height: '240px'
           }}>
             {renderTextGrid()}
@@ -913,53 +932,61 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         <div className="navigation-buttons">
           {step === 1 && (
             <button className="continue-button" onClick={() => {
-              setTimeout(() => setStep(2), 5000); // Simulate the rotation process
+              setStep(2);
+              setTreasureOpened(true);
+              setTimeout(() => {
+                setTreasureOpened(false);
+                animateToCleanedText();
+                setTimeout(() => setStep(3), 2000);
+              }, 5000);
             }}>
               Rotate to 90°
             </button>
           )}
           {step === 2 && (
             <button className="continue-button" onClick={() => {
-              animateToCleanedText();
-              setTimeout(() => setStep(3), 2000);
+              setStep(3);
+              setTreasureOpened(true);
+              setTimeout(() => {
+                setTreasureOpened(false);
+                animateToPaddedText();
+                setTimeout(() => setStep(4), 2000);
+              }, 5000);
             }}>
               Rotate to 270°
             </button>
           )}
           {step === 3 && (
             <button className="continue-button" onClick={() => {
-              animateToPaddedText();
-              setTimeout(() => setStep(4), 2000);
+              setStep(4);
+              setTreasureOpened(true);
+              setTimeout(() => {
+                setTreasureOpened(false);
+                if (chessBoardRef.current) {
+                  // Animate chess board dissolve effect
+                  const squares = chessBoardRef.current.querySelectorAll('.chess-square');
+                  squares.forEach((square, index) => {
+                    // Only animate squares in the filter area (columns 6-13, rows 0-7)
+                    const rowIndex = Math.floor(index / 8);
+                    const colIndex = index % 8;
+                    
+                    if (rowIndex >= 0 && rowIndex <= 7 && colIndex >= 0 && colIndex <= 7) {
+                      gsap.fromTo(square, 
+                        { opacity: 0 },
+                        { 
+                          opacity: 1,
+                          duration: 1,
+                          delay: (rowIndex * 0.1) + (colIndex * 0.05),
+                          ease: "power2.out"
+                        }
+                      );
+                    }
+                  });
+                }
+                setStep(5);
+              }, 5000);
             }}>
               Rotate to 180°
-            </button>
-          )}
-          {step === 4 && (
-            <button className="continue-button" onClick={() => {
-              // Animate chess board dissolve effect
-              if (chessBoardRef.current) {
-                const squares = chessBoardRef.current.querySelectorAll('.chess-square');
-                squares.forEach((square, index) => {
-                  // Only animate squares in the filter area (columns 6-13, rows 0-7)
-                  const rowIndex = Math.floor(index / 8);
-                  const colIndex = index % 8;
-                  
-                  if (rowIndex >= 0 && rowIndex <= 7 && colIndex >= 0 && colIndex <= 7) {
-                    gsap.fromTo(square, 
-                      { opacity: 0 },
-                      { 
-                        opacity: 1,
-                        duration: 1,
-                        delay: (rowIndex * 0.1) + (colIndex * 0.05),
-                        ease: "power2.out"
-                      }
-                    );
-                  }
-                });
-              }
-              setStep(5);
-            }}>
-              Rotate to 0°
             </button>
           )}
           {(step >= 5) && (
@@ -1017,38 +1044,19 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
       <ShipWheel 
         onRotationChange={handleWheelRotation} 
         targetAngle={
-          step === 0 ? 180 :    // Initial state: rotate to 180° to display text
-          step === 1 ? 90 :     // After text shown: rotate to 90° 
-          step === 2 ? 270 :    // After punctuation removed: rotate to 270°
-          step === 3 ? 180 :    // After padding applied: rotate to 180°
-          step === 4 ? 0 :      // After chessboard shown: rotate to 0°
-          step === 5 ? 0 :      // For poneglyph alignment: return to 0°
-          360                   // For opacity transition: to 360°
+          step === 0 ? 180 :    // Step 0 → target 180° = show text
+          step === 1 ? 90 :     // Step 1 → target 90° = remove punctuation  
+          step === 2 ? 270 :    // Step 2 → target 270° = apply padding
+          step === 3 ? 180 :    // Step 3 → target 180° = show chessboard at column 0
+          step === 4 ? 340 :    // Step 4 → target 340 = slide chessboard
+          0                     // For step 5, 6, and beyond: target 0°
         }
         step={step}
         onPoneglyphAlignment={handlePoneglyphAlignment}
       />
-      {treasureOpened && (
+      {(treasureOpened || currentPoneglyph) && (
         <div className="treasure-chest-overlay">
-          <img 
-            src="/images/treasure_box_256.png" 
-            alt="Treasure Chest" 
-            className="treasure-chest-image"
-            style={{ 
-              position: 'absolute', 
-              width: '100px', 
-              height: '100px',
-              zIndex: 100,
-              // Position the treasure chest based on the current step
-              left: step === 1 ? '0px' : step === 2 ? 'auto' : step === 3 ? '50%' : step === 4 ? '50%' : '50%',
-              right: step === 2 ? '0px' : 'auto',
-              top: step === 4 ? '0px' : step === 3 ? 'auto' : '50%',
-              bottom: step === 3 ? '0px' : 'auto',
-              transform: step === 1 ? 'translateY(-50%)' : step === 2 ? 'translateY(-50%)' : step === 3 ? 'translateX(-50%)' : step === 4 ? 'translateX(-50%)' : 'translate(-50%, -50%)',
-              animation: 'fadeInOut 5s forwards'
-            }}
-          />
-          {(step === 5 && currentPoneglyph) && ( // Show poneglyph only during step 5 after treasure chest opens
+          {currentPoneglyph && step >= 5 ? ( // Show poneglyph from step 5 and beyond
             <img 
               src={currentPoneglyph} 
               alt="Poneglyph" 
@@ -1064,7 +1072,26 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 animation: 'fadeInOut 5s forwards'
               }}
             />
-          )}
+          ) : treasureOpened ? ( // Otherwise, show treasure chest if opened
+            <img 
+              src="/images/treasure_box_256.png" 
+              alt="Treasure Chest" 
+              className="treasure-chest-image"
+              style={{ 
+                position: 'absolute', 
+                width: '100px', 
+                height: '100px',
+                zIndex: 100,
+                // Position the treasure chest based on the current step
+                left: step === 0 ? 'auto' : step === 1 ? '0px' : step === 2 ? '0px' : step === 3 ? 'auto' : step === 4 ? '50%' : step === 5 ? '50%' : '50%',
+                right: step === 2 ? 'auto' : step === 3 ? '0px' : step === 4 ? 'auto' : step === 5 ? 'auto' : 'auto',
+                top: step === 4 ? 'auto' : step === 3 ? 'auto' : step === 0 ? '50%' : step === 1 ? '50%' : step === 2 ? '50%' : step === 5 ? '50%' : '50%',
+                bottom: step === 3 ? '0px' : step === 4 ? 'auto' : step === 5 ? 'auto' : 'auto',
+                transform: step === 0 ? 'translate(-50%, -50%)' : step === 1 ? 'translateY(-50%)' : step === 2 ? 'translateX(-50%)' : step === 3 ? 'translateY(-50%)' : step === 4 ? 'translateX(-50%)' : step === 5 ? 'translate(-50%, -50%)' : 'translate(-50%, -50%)',
+                animation: 'fadeInOut 5s forwards'
+              }}
+            />
+          ) : null}
         </div>
       )}
       {renderStepContent()}
