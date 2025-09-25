@@ -1277,7 +1277,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               style={{
                 position: 'relative',
                 width: '1140px' /* 38 columns * 30px = 1140px */,
-                height: '240px',
+                height: '280px',
               }}
             />
             {/* Additional space for chess overlay area that appears in later steps */}
