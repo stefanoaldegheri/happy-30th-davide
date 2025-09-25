@@ -1278,7 +1278,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               style={{
                 position: 'relative',
                 width: '1140px' /* 38 columns * 30px = 1140px */,
-                height: '280px',
+                height: '290px',
               }}
             />
             {/* Additional space for chess overlay area that appears in later steps */}
@@ -1392,7 +1392,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               style={{
                 position: 'relative',
                 width: '1140px',
-                height: '60px', // Height for one row of text
+                height: '1px', // Height for one row of text
                 top: '260px', // Below the main grid (240px + 20px margin)
                 left: 0,
                 display: 'flex',
@@ -1424,12 +1424,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         </div>
 
         {/* Show revealed message when opacity is low enough */}
-        <div className={`revealed-message ${revealedMessage ? 'show' : ''}`}>
-          {revealedMessage && step < 6 && (
-            <p>
-              Secret revealed: <strong>{revealedMessage}</strong>
-            </p>
-          )}
+        <div className={`revealed-message ${revealedMessage ? '' : ''}`}>
+          {revealedMessage && step < 9            }
           {/* In step 6, the letters are displayed in the dedicated container above */}
           {/* Button is now positioned in the grid area below the red text */}
         </div>
