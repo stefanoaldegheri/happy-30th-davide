@@ -1,4 +1,4 @@
-body {
+html, body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -6,6 +6,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f5f5f5;
+  overscroll-behavior: none; /* Disable pull-to-refresh and overscroll effects */
+  height: 100vh;
+  overflow: hidden;
+}
+
+img {
+  -webkit-touch-callout: none; /* Disable context menu on long press for iOS */
+  -webkit-user-select: none; /* Disable text selection on images */
+  pointer-events: none; /* Prevent image interaction */
 }
 
 code {

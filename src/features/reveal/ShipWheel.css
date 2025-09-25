@@ -69,11 +69,18 @@
 .ship-wheel {
   width: 256px;
   height: 256px;
-  cursor: grab;
+ cursor: grab;
   transition: transform 0.1s ease;
   border: 2px solid #bca158; /* Aged brass border */
   border-radius: 50%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  touch-action: none; /* Prevent default touch behaviors to avoid page scrolling during drag */
+  -webkit-touch-callout: none; /* Disable context menu on long press for iOS */
+  -webkit-user-select: none; /* Disable text selection for WebKit */
+  -moz-user-select: none; /* Disable text selection for Firefox */
+  -ms-user-select: none; /* Disable text selection for IE/Edge */
+  user-select: none; /* Disable text selection */
+  pointer-events: auto; /* Allow pointer events for the wheel interaction */
 }
 
 .ship-wheel:active {

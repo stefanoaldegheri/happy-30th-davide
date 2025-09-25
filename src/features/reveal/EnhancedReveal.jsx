@@ -90,6 +90,7 @@ const EnhancedReveal = () => {
   const navigate = useNavigate();
   const gridRef = useRef(null);
   const chessBoardRef = useRef(null);
+  const containerRef = useRef(null);
   const [step, setStep] = useState(0); // 0: initial, 1: original text, 2: transition to cleaned text, 3: apply padding, 4: chess overlay, 5: poneglyph alignment, 6: revealed message
 
   const [revealedMessage, setRevealedMessage] = useState('');
@@ -1444,6 +1445,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
 
   return (
     <div
+      ref={containerRef}
       style={{
         position: 'relative',
         width: '100%',

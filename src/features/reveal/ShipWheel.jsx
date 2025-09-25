@@ -30,7 +30,9 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   
   // Prevent default drag behavior to avoid ghosting effect
   const handleDragStart = (e) => {
+    // Prevent all default drag behaviors
     e.preventDefault();
+    e.stopPropagation();
     
     // Create an invisible image to use as drag image
     const emptyImage = new Image();
@@ -41,30 +43,43 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
       e.dataTransfer.setDragImage(emptyImage, 0, 0);
       e.dataTransfer.setData('text/plain', 'ship-wheel');
     }
+    
+    // Return false to ensure drag doesn't proceed
+    return false;
   };
   
   // Handle mouse down on wheel
   const handleMouseDown = (e) => {
+    // Prevent default to avoid any drag behaviors
+    e.preventDefault();
+    
     setIsDragging(true);
-    setLastPosition({ 
-      x: e.clientX, 
-      y: e.clientY 
+    setLastPosition({
+      x: e.clientX,
+      y: e.clientY
     });
-  };
+ };
   
   // Handle touch start on wheel
   const handleTouchStart = (e) => {
+    // Prevent default to avoid drag behavior on touch
+    e.preventDefault();
+    
     setIsDragging(true);
     const touch = e.touches[0];
-    setLastPosition({ 
-      x: touch.clientX, 
-      y: touch.clientY 
+    setLastPosition({
+      x: touch.clientX,
+      y: touch.clientY
     });
   };
   
   // Handle mouse move
   const handleMouseMove = (e) => {
     if (!isDragging || !wheelRef.current) return;
+    
+    // Prevent default to avoid any scrolling or drag behaviors
+    e.preventDefault();
+    e.stopPropagation();
     
     const rect = wheelRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -111,15 +126,19 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     checkTargetReached(newRotation);
     
     // Update last position
-    setLastPosition({ 
-      x: e.clientX, 
-      y: e.clientY 
+    setLastPosition({
+      x: e.clientX,
+      y: e.clientY
     });
   };
   
   // Handle touch move
   const handleTouchMove = (e) => {
     if (!isDragging || !wheelRef.current) return;
+    
+    // Prevent default touch behavior to avoid page scrolling during drag
+    e.preventDefault();
+    e.stopPropagation();
     
     const touch = e.touches[0];
     const rect = wheelRef.current.getBoundingClientRect();
@@ -167,14 +186,18 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     checkTargetReached(newRotation);
     
     // Update last position
-    setLastPosition({ 
-      x: touch.clientX, 
-      y: touch.clientY 
+    setLastPosition({
+      x: touch.clientX,
+      y: touch.clientY
     });
-  };
+ };
   
   // Handle mouse up
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
+    // Prevent default to avoid any behaviors
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (isDragging) {
       // For step 4 (sliding chessboard), check if in range 16°-44°
       // For step 5 (opacity control), check if close to 355°
@@ -207,7 +230,10 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   };
 
   // Handle touch end
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e) => {
+    // Prevent default to avoid any touch behaviors
+    e.preventDefault();
+    
     if (isDragging) {
       // For step 4 (sliding chessboard), check if in range 16°-44°
       // For step 5 (opacity control), check if close to 355°
@@ -242,10 +268,10 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   // Add event listeners
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mousemove', handleMouseMove, { passive: false });
       window.addEventListener('mouseup', handleMouseUp);
-      window.addEventListener('touchmove', handleTouchMove);
-      window.addEventListener('touchend', handleTouchEnd);
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd, { passive: false });
     }
     
     return () => {
