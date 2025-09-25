@@ -291,7 +291,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   const animateToCleanedText = () => {
     if (gridRef.current) {
       const chars = gridRef.current.querySelectorAll('.grid-char');
-      chars.forEach((char) => {
+      chars.forEach((char, index) => {
         const originalRow = parseInt(char.dataset.originalRow);
         const originalCol = parseInt(char.dataset.originalCol);
         const targetRow = parseInt(char.dataset.targetRow);
@@ -307,20 +307,20 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           const targetLeft = targetCol * 30;
           const targetTop = targetRow * 30;
 
-          // Set initial position
-          gsap.set(char, {
-            x: 0,
-            y: 0,
-          });
+          // Set initial position using GSAP to avoid React conflicts
+         // gsap.set(char, {
+        //    x: originalLeft,
+        //    y: originalTop,
+        //  });
 
-          // Animate from original position to target position
-          gsap.to(char, {
-            x: targetLeft - originalLeft,
-            y: targetTop - originalTop,
-            duration: 2, // 2 seconds for faster movement
-            ease: 'power2.out',
-            delay: originalRow * 0.05 + originalCol * 0.01, // Staggered animation
-          });
+          // Animate from original position to target position with slower linear movement
+          gsap.fromTo(char, 
+            {x: originalLeft}, {x: targetLeft - originalLeft, duration: 0.5, delay: originalRow * 0.1 + originalCol * 0.02, ease: "elastic"}
+            // y: targetTop,
+            // duration: 5, // 5 seconds for slower, more gradual movement
+            // ease: 'none', // Linear movement (no easing)
+            // delay: originalRow * 0.1 + originalCol * 0.02, // Slower staggered animation
+          );
         }
       });
     }
@@ -347,20 +347,23 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
           const targetLeft = (targetCol + padding) * 30;
           const targetTop = targetRow * 30;
 
-          // Set initial position
-          gsap.set(char, {
-            x: 0,
-            y: 0,
-          });
+          // Set initial position using GSAP to avoid React conflicts
+          // gsap.set(char, {
+          //   x: originalLeft,
+          //   y: originalTop,
+          // });
 
-          // Animate from original position to target position
-          gsap.to(char, {
-            x: targetLeft - originalLeft,
-            y: targetTop - originalTop,
-            duration: 2, // 2 seconds for faster movement
-            ease: 'power2.out',
-            delay: originalRow * 0.05 + originalCol * 0.01, // Staggered animation
-          });
+          gsap.fromTo(char, 
+            {x: originalLeft}, {x: targetLeft - originalLeft, duration: 0.5, delay: originalRow * 0.1 + originalCol * 0.02, ease: ""  });
+
+          // Animate from original position to target position with slower linear movement
+          // gsap.to(char, {
+          //   x: targetLeft,
+          //   y: targetTop,
+          //   duration: 5, // 5 seconds for slower, more gradual movement
+          //   ease: 'none', // Linear movement (no easing)
+          //   delay: originalRow * 0.1 + originalCol * 0.02, // Slower staggered animation
+          // });
         }
       });
     }
@@ -757,40 +760,64 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
   };
 
   // Handle wheel rotation changes
-  const handleWheelRotation = (angle) => {
+ const handleWheelRotation = (angle) => {
     switch (step) {
       case 0:
-        // Step 0 → target 180° = show text
+        // Step 0 → target 180° = show text with slow fade-in
         if (angle === 180) {
           setStep(1);
           setTreasureOpened(true);
           setTimeout(() => {
             setTreasureOpened(false);
-          }, 5000);
+          }, 8000); // Increased from 5000ms to 8000ms for slower transition
+          
+          // Apply slow fade-in effect to text characters
+          if (gridRef.current) {
+            const chars = gridRef.current.querySelectorAll('.grid-char');
+            chars.forEach((char, index) => {
+              gsap.fromTo(
+                char,
+                { opacity: 0, scale: 0.8 },
+                {
+                  opacity: 1,
+                  scale: 1,
+                  duration: 4, // 4 seconds for slow fade-in
+                  delay: (index % 38) * 0.02 + Math.floor(index / 38) * 0.1, // Staggered slow entrance
+                  ease: 'power2.out'
+                }
+              );
+            });
+          }
         }
         break;
       case 1:
         // Step 1 → target 90° = remove punctuation
         if (angle === 90) {
-          setStep(2);
-          setTreasureOpened(true);
+          // Animate the transition before updating the step to maintain original positions during animation
           setTimeout(() => {
-            setTreasureOpened(false);
             animateToCleanedText();
-            // Stay in step 2 and wait for the next rotation to 270°
-          }, 5000);
+            setStep(2);
+            setTreasureOpened(true);
+            setTimeout(() => {
+              setTreasureOpened(false);
+              // Stay in step 2 and wait for the next rotation to 270°
+            }, 5000);
+          }, 10); // Small delay to ensure animation starts from current visual state
         }
         break;
       case 2:
         // Step 2 → target 270° = apply padding
         if (angle === 270) {
-          setStep(3);
-          setTreasureOpened(true);
+          // Animate the transition before updating the step to maintain current positions during animation
           setTimeout(() => {
-            setTreasureOpened(false);
             animateToPaddedText();
-            // Stay in step 3 and wait for the next rotation to 180°
-          }, 1000); // Reduced from 5000 to 1000ms (1 second)
+            setStep(3);
+            setTreasureOpened(true);
+            setTimeout(() => {
+              setTreasureOpened(false);
+              // Stay in step 3 and wait for the next rotation to 180°
+            }, 1000); // Reduced from 5000 to 1000ms (1 second)
+          }, 10); // Small delay to ensure animation starts from current visual state
         }
         break;
       case 3:
@@ -842,6 +869,28 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         // When target reached (between 16°-44°), move to next step
         if (angle >= 16 && angle <= 44) {
           // Within the target range
+          
+          // Add glowing effect to chessboard when approaching the target (around 30°)
+          if (Math.abs(angle - 30) < 5 && chessBoardRef.current) {
+            const squares = chessBoardRef.current.querySelectorAll('.chess-square');
+            squares.forEach((square) => {
+              // Add glowing effect using GSAP
+              gsap.to(square, {
+                boxShadow: '0 0 15px #ffff00, 0 0 30px #ff00ff', // Yellow and magenta glow
+                duration: 1.5,
+                repeat: 1,
+                yoyo: true,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                  // Remove glow effect after animation
+                  gsap.set(square, {
+                    boxShadow: 'none'
+                  });
+                }
+              });
+            });
+          }
+          
           setStep(5);
           setTreasureOpened(true);
           setTimeout(() => {
