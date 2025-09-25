@@ -1380,7 +1380,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                 <button
                   type="button"
                   className="continue-button"
-                  onClick={() => navigate('/final')}
+                  onClick={() => window.open('https://davidesthirty.github.io/regalo-segreto/', '_blank')}
                 >
                   Continue to Final Gift
                 </button>
@@ -1462,7 +1462,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                   <button
                     type="button"
                     className="continue-button"
-                    onClick={() => navigate('/final')}
+                    onClick={() => window.open('https://davidesthirty.github.io/regalo-segreto/', '_blank')}
                   >
                     Continue to Final Gift
                   </button>
