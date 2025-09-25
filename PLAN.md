@@ -14,8 +14,6 @@ status: blocked
 
 ## [COMPLETED] TASK-implement-reveal-module - Build the overlay reveal mechanism with opacity slider
 
-## [COMPLETED] TASK-implement-final-link-module - Create the final hyperlink that reveals after solving the puzzles
-
 ## [COMPLETED] TASK-integrate-modules - Connect all modules together to create the complete user flow
 
 ## [COMPLETED] TASK-enhance-ocr-reveal-animation - Enhance the OCR reveal animation with multi-step transitions
@@ -25,8 +23,6 @@ status: blocked
 ## [COMPLETED] TASK-add-transparency-slider - Add transparency slider for chess piece positions
 
 ## [COMPLETED] TASK-create-letter-reveal-effect - Create the letter reveal effect with smooth transitions
-
-## [COMPLETED] TASK-generate-final-link - Generate the final clickable link after letter reveal
 
 ## [IN PROGRESS] TASK-add-styling - Apply consistent styling and responsive design across all components
 

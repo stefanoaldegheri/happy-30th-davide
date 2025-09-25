@@ -21,9 +21,6 @@ The application follows a feature-based architecture where each feature is self-
 4. **Reveal Module** (`/src/features/reveal`)
    - Overlay mechanism with opacity slider
    - Reveals secret message "davidesthirty"
-
-5. **Final Link Module** (`/src/features/final`)
-   - Presents the final gift hyperlink
    - Redirects to the secret gift page
 
 ## Technical Stack

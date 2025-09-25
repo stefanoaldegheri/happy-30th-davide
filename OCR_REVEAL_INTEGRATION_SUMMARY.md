@@ -9,7 +9,7 @@ This document summarizes the implementation of the OCR reveal integration with t
 - **Step 1**: Display original OCR text as recognized
 - **Step 2**: Restructure text into an 8x8 grid format after 5 seconds
 - **Step 3**: Apply chess filter grid overlay with adjustable opacity slider
-- **Step 4**: Reveal secret message and generate final link
+- **Step 4**: Reveal secret message
 
 ### 2. Chess Filter Grid Integration
 - Implemented the chess position JSON structure as an overlay
@@ -19,7 +19,6 @@ This document summarizes the implementation of the OCR reveal integration with t
 ### 3. Secret Message Extraction
 - Developed algorithm to extract letters from grid positions corresponding to chess pieces
 - Implemented smooth transition effects for letter reveal
-- Generated clickable final link after message reveal
 
 ### 4. Data Flow Between Modules
 - Used sessionStorage to pass OCR results from OCR module to Reveal module

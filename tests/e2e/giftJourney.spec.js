@@ -4,7 +4,6 @@ const { WelcomePage } = require('./page_objects/WelcomePage');
 const { ChessPuzzlePage } = require('./page_objects/ChessPuzzlePage');
 const { OcrModulePage } = require('./page_objects/OcrModulePage');
 const { RevealModulePage } = require('./page_objects/RevealModulePage');
-const { FinalLinkPage } = require('./page_objects/FinalLinkPage');
 
 test('User can complete the entire gift experience journey', async ({ page }) => {
   console.log('Starting the gift experience journey test...');
@@ -73,22 +72,6 @@ test('User can complete the entire gift experience journey', async ({ page }) =>
   // Continue to final page
   console.log('Clicking Continue button on Reveal page...');
   await revealModulePage.clickContinue();
-  
-  // Test the final link page
-  console.log('Waiting for navigation to Final page...');
-  await page.waitForURL('**/final');
-  console.log('Navigated to Final page');
-  
-  console.log('Checking if Final link page is visible...');
-  const finalLinkPage = new FinalLinkPage(page);
-  const isFinalVisible = await finalLinkPage.isVisible();
-  expect(isFinalVisible).toBeTruthy();
-  console.log('Final link page is visible');
-  
-  // Verify the gift link exists
-  console.log('Getting gift link...');
-  const giftLink = await finalLinkPage.getGiftLink();
-  console.log(`Gift link: ${giftLink}`);
-  expect(giftLink).toContain('davidesthirty.github.io');
-  console.log('Test completed successfully');
+  // The final link page has been removed, so the test ends after the reveal page
+
 });

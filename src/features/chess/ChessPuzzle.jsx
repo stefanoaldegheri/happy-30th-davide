@@ -100,30 +100,65 @@ const ChessPuzzle = () => {
   }
   
   return (
-    <div className="chess-puzzle-container">
-      <div className="chess-puzzle-card">
-        <h1 className="chess-title">Chess Challenge</h1>
-        <p className="chess-instructions">
-          Solve this chess puzzle to continue your journey. You play as White.
-        </p>
+    <div className="enhanced-reveal-container">
+      <div className="reveal-card">
+        <h1 className="reveal-title" style={{ fontFamily: 'Pirata One, Blackletter, serif', fontSize: '2rem' }}>
+          Chess Challenge
+        </h1>
+        <div className="original-text">
+          <p className="chess-instructions">
+            Solve this chess puzzle to continue your journey. You play as White.
+          </p>
+        </div>
         
-        <div className="board-container">
-          <Chessboard 
+        <div
+          className="board-container"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '20px 0',
+            padding: '15px',
+            backgroundColor: '#f5e9d3',
+            borderRadius: '8px',
+            border: '1px solid #bca158',
+          }}
+        >
+          <Chessboard
             position={game.fen()}
             onDrop={onDrop}
             boardStyle={{
               borderRadius: '4px',
-              boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5)'
+              boxShadow: '0 5px 15px rgba(0, 0, 0.3)',
+              border: '2px solid #bca158',
             }}
             orientation="white"
+            squareSize={40}
           />
         </div>
         
         {showSuccess && (
-          <div className="success-modal">
-            <h2>Congratulations!</h2>
-            <p>You've solved the chess puzzle.</p>
-            <button className="continue-button" onClick={handleContinue}>
+          <div
+            className="success-modal"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: '#f5e9d3',
+              border: '2px solid #bca158',
+              borderRadius: '10px',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+              padding: '30px',
+              textAlign: 'center',
+              zIndex: 10,
+              width: '80%',
+              maxWidth: '400px',
+              color: '#3e3224',
+            }}
+          >
+            <h2 style={{ color: '#3e3224', fontFamily: 'Georgia, serif', marginTop: 0 }}>Congratulations!</h2>
+            <p style={{ color: '#3e3224', fontFamily: 'Georgia, serif' }}>You've solved the chess puzzle.</p>
+            <button type="button" className="continue-button" onClick={handleContinue}>
               Continue to Next Challenge
             </button>
           </div>

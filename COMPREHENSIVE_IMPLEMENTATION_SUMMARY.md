@@ -55,8 +55,6 @@ src/
 │   │   └── EnhancedReveal.jsx
 │   ├── welcome/
 │   │   └── Welcome.jsx
-│   └── final/
-│       └── FinalLink.jsx
 └── App.js
 ```
 
