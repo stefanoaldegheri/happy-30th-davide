@@ -92,7 +92,7 @@ const ChessPuzzle = () => {
   };
   
   const handleContinue = () => {
-    navigate('/ocr');
+    navigate('/reveal');
   };
   
   if (!game) {

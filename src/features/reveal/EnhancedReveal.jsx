@@ -184,13 +184,13 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         letterPositions.push({ x: 690, y: 90 -90});
         letterPositions.push({ x: 720, y: 90-120 });
         letterPositions.push({ x: 750, y: 90-120 });
-        letterPositions.push({ x: 780, y: 90-150 });
-        letterPositions.push({ x: 810, y: 90-150 });
-        letterPositions.push({ x: 840, y: 90-150 });
-        letterPositions.push({ x: 870, y: 90-150 });
-        letterPositions.push({ x: 900, y: 90-180 });
-        letterPositions.push({ x: 930, y: 90 -180});
-        letterPositions.push({ x: 960, y: 90-210 });
+        letterPositions.push({ x: 780+60, y: 90-150 });
+        letterPositions.push({ x: 810+90, y: 90-150 });
+        letterPositions.push({ x: 840+90, y: 90-150 });
+        letterPositions.push({ x: 870+90, y: 90-150 });
+        letterPositions.push({ x: 900+90, y: 90-180 });
+        letterPositions.push({ x: 930+90, y: 90 -180});
+        letterPositions.push({ x: 960+90, y: 90-210 });
 
         // const targetRow = 3; // 4th row (0-indexed)
         // const startCol = 20;
@@ -207,33 +207,60 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         
         // Define a closure to capture the total animations count
         const totalAnimations = Math.min(redLettersToMove.length, letterPositions.length);
+        // Account for the duplicate letter that will be added for the 4th letter
+        const totalAnimationsWithDuplicate = redLettersToMove.length > 3
+          ? totalAnimations + 1
+          : totalAnimations;
         let completedAnimations = 0;
         
         redLettersToMove.forEach((letterData, index) => {
           if (index < letterPositions.length) {
             // Calculate the original position relative to the grid container
-            const originalLeft =
-              parseInt(letterData.element.style.left) || letterData.col * 30;
-            const originalTop =
-              parseInt(letterData.element.style.top) || letterData.row * 30;
+            const originalLeft = parseInt(letterData.element.style.left, 10) || letterData.col * 30;
+            const originalTop = parseInt(letterData.element.style.top, 10) || letterData.row * 30;
 
             // Get the final position for this letter
             const finalPos = letterPositions[index];
 
             console.log(
-              `Animating letter ${letterData.text} from (${originalLeft}, ${originalTop}) to (${finalPos.x}, ${finalPos.y})`
+              `Animating letter ${letterData.text} from (${originalLeft}, ${originalTop}) to (${finalPos.x}, ${finalPos.y})`,
             );
-
 
             // Create a function that captures the current value of completedAnimations
             const handleAnimationComplete = () => {
-              completedAnimations++;
-              if (completedAnimations === totalAnimations) {
+              completedAnimations += 1;
+              if (completedAnimations === totalAnimationsWithDuplicate) {
                 // All animations are completed
                 setAllLettersAnimated(true);
               }
             };
 
+            // Duplicate the 4th letter (index 3) to position (810, 30)
+            // Fade in directly at final position, but only after index 6
+            if (index === 3) {
+              // Clone the element
+              const duplicateElement = letterData.element.cloneNode(true);
+              duplicateElement.style.position = 'absolute';
+              duplicateElement.style.opacity = '0'; // Start invisible
+              duplicateElement.style.left = '810px'; // Start at final position
+              duplicateElement.style.top = '90px';
+              duplicateElement.style.zIndex = 20;
+              duplicateElement.style.color = 'red';
+              
+              // Add the duplicate to the grid container
+              gridRef.current.appendChild(duplicateElement);
+              
+              // Fade in the duplicate at the final position (810, 30), but only after index 6
+              gsap.to(duplicateElement, {
+                opacity: 1,
+                duration: 1,
+                delay: 6 * 0.35, // Wait until after index 6 (6th element) to show
+                // fontSize and fontWeight are already animated, so no need to set them again
+                onComplete: handleAnimationComplete, // Call handleAnimationComplete for duplicate
+              });
+            }
+
+            // Animate the original letter to its target position
             gsap.set(letterData.element, {
               left: finalPos.x,
               top: finalPos.y,
@@ -242,9 +269,9 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               position: 'absolute',
               zIndex: 200,
               color: 'red',
-              delay:  index * 0.35,
+              delay: index * 0.35,
               // fontSize and fontWeight are already animated, so no need to set them again
-              onComplete: handleAnimationComplete
+              onComplete: handleAnimationComplete, // Call handleAnimationComplete for original
             });
           }
         });
@@ -1233,7 +1260,41 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     /* Render the step content with updated chess board position */
   }
   const renderStepContent = () => {
-    if (step < 1) return null; // Don't render anything until the first rotation occurs (step 1+)
+    if (step < 1) {
+      // Render an empty div with the same dimensions to maintain layout space
+      return (
+        <div className="step-all-transitions" style={{ marginTop: '60px' }}>
+          <div
+            style={{
+              position: 'relative',
+              width: '1140px' /* 38 columns * 30px = 1140px */,
+              margin: '20px 0',
+              textAlign: 'left',
+            }}
+          >
+            {/* Empty container to maintain layout space for the main grid */}
+            <div
+              style={{
+                position: 'relative',
+                width: '1140px' /* 38 columns * 30px = 1140px */,
+                height: '240px',
+              }}
+            />
+            {/* Additional space for chess overlay area that appears in later steps */}
+            <div
+              style={{
+                position: 'relative',
+                width: '1140px',
+                height: '240px', /* Same height as the chess board area */
+                marginTop: '-240px', /* Overlap with the grid to maintain same total height */
+                zIndex: 1,
+              }}
+            />
+          </div>
+
+        </div>
+      );
+    }
 
     return (
       <div className="step-all-transitions" style={{ marginTop: '60px' }}>
