@@ -345,35 +345,35 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     }, [step, targetAngle]);
     
     return (
-    <div className="ship-wheel-container">
-      <div className="ship-wheel-left">
-        <div className="north-circle"></div>
-        <div className={`south-circle ${getSouthCircleClass()}`}></div>
-        <div className={`east-circle ${step === 1 && Math.abs(rotation - 90) < 5 ? 'position-reached' : (step === 1 ? 'position-not-reached' : '')}`}></div>
-        <div className={`west-circle ${step === 2 && Math.abs(rotation - 270) < 5 ? 'position-reached' : (step === 2 ? 'position-not-reached' : '')}`}></div>
-        <img
-          ref={wheelRef}
-          src="/images/ship_wheel_256.png"
-          alt="Ship Wheel"
-          className="ship-wheel"
-          style={{ transform: `rotate(${rotation}deg)` }}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onDragStart={handleDragStart}
-        />
-      </div>
-      <div className="ship-wheel-right">
-        <div className="ship-wheel-instruction">
-          <h3>Instruction:</h3>
-          <p>{getInstruction()}</p>
+      <div className="ship-wheel-container">
+        <div className="ship-wheel-left">
+          <div className="north-circle"></div>
+          <div className="northeast-circle"></div>
+          <div className={`south-circle ${getSouthCircleClass()}`}></div>
+          <div className="southeast-circle"></div>
+          <div className={`east-circle ${step === 1 && Math.abs(rotation - 90) < 5 ? 'position-reached' : (step === 1 ? 'position-not-reached' : '')}`}></div>
+          <div className="southwest-circle"></div>
+          <div className={`west-circle ${step === 2 && Math.abs(rotation - 270) < 5 ? 'position-reached' : (step === 2 ? 'position-not-reached' : '')}`}></div>
+          <div className="northwest-circle"></div>
+          <img
+            ref={wheelRef}
+            src="/images/ship_wheel_256.png"
+            alt="Ship Wheel"
+            className="ship-wheel"
+            style={{ transform: `rotate(${rotation}deg)` }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            onDragStart={handleDragStart}
+          />
         </div>
-        <div className="ship-wheel-position">
-          {step < 4 && <p>Current Position: <span className={isTargetReached ? "position-reached" : "position-not-reached"}>{Math.round(rotation)}°</span></p>}
-          {step < 4 && <p>Target Position: <span>{getTargetAngle()}°</span></p>}
+        <div className="ship-wheel-right">
+          <div className="ship-wheel-instruction">
+            <h3>Instruction:</h3>
+            <p>{getInstruction()}</p>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default ShipWheel;

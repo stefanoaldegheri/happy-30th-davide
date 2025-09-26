@@ -870,8 +870,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         if (angle >= 16 && angle <= 44) {
           // Within the target range
           
-          // Add glowing effect to chessboard when approaching the target (around 30°)
-          if (Math.abs(angle - 30) < 5 && chessBoardRef.current) {
+          // Add glowing effect to chessboard when reaching step 5
+          if (chessBoardRef.current) {
             const squares = chessBoardRef.current.querySelectorAll('.chess-square');
             squares.forEach((square) => {
               // Add glowing effect using GSAP

@@ -88,7 +88,7 @@
 }
 
 /* Circle indicators around the wheel */
-.north-circle, .south-circle, .east-circle, .west-circle {
+.north-circle, .south-circle, .east-circle, .west-circle, .northeast-circle, .southeast-circle, .southwest-circle, .northwest-circle {
   position: absolute;
   width: 20px;
   height: 20px;
@@ -102,9 +102,9 @@
   left: calc(50% - 10px);
 }
 
-.south-circle {
-  top: calc(50% + 140px); /* Adjusted position to be 150px from center of wheel */
- left: calc(50% - 10px);
+.northeast-circle {
+  top: calc(50% - 10px - 106px); /* 150px * sin(45°) ≈ 106px */
+  left: calc(50% - 10px + 106px); /* 150px * cos(45°) ≈ 106px */
 }
 
 .east-circle {
@@ -112,9 +112,29 @@
   left: calc(50% + 146px); /* Adjusted position to be 150px from center of wheel */
 }
 
+.southeast-circle {
+  top: calc(50% - 10px + 106px); /* 150px * sin(45°) ≈ 106px */
+  left: calc(50% - 10px + 106px); /* 150px * cos(45°) ≈ 106px */
+}
+
+.south-circle {
+ top: calc(50% + 140px); /* Adjusted position to be 150px from center of wheel */
+ left: calc(50% - 10px);
+}
+
+.southwest-circle {
+ top: calc(50% - 10px + 106px); /* 150px * sin(45°) ≈ 106px */
+  left: calc(50% - 10px - 106px); /* 150px * cos(45°) ≈ 106px */
+}
+
 .west-circle {
-  top: calc(50% - 10px);
+ top: calc(50% - 10px);
   left: calc(50% - 166px); /* Adjusted position to be 150px from center of wheel */
+}
+
+.northwest-circle {
+  top: calc(50% - 10px - 106px); /* 150px * sin(45°) ≈ 106px */
+  left: calc(50% - 10px - 106px); /* 150px * cos(45°) ≈ 106px */
 }
 
 /* Apply the same color logic to the circles */
