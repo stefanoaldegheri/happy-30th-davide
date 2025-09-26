@@ -174,7 +174,6 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         });
 
         console.log('Letters to move:', redLettersToMove);
-        const secretWord = revealedMessage || 'davidesthirty';
 
         // Calculate the final positions for each letter in the 4th row (index 3) from column 20 to 34
         const letterPositions = [];
