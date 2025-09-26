@@ -231,7 +231,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               completedAnimations += 1;
               if (completedAnimations === totalAnimationsWithDuplicate) {
                 // All animations are completed
-                setAllLettersAnimated(true);
+                setTimeout(()=>{setAllLettersAnimated(true);},2000);
               }
             };
 
@@ -794,7 +794,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         if (angle === 90) {
           // Animate the transition before updating the step to maintain original positions during animation
           setTimeout(() => {
-            animateToCleanedText();
+            //animateToCleanedText();
             setStep(2);
             setTreasureOpened(true);
             setTimeout(() => {
@@ -809,7 +809,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         if (angle === 270) {
           // Animate the transition before updating the step to maintain current positions during animation
           setTimeout(() => {
-            animateToPaddedText();
+           // animateToPaddedText();
             setStep(3);
             setTreasureOpened(true);
             setTimeout(() => {
@@ -1082,7 +1082,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
                       left: `${colIndex * 30}px`,
                       top: 0,
                       opacity:
-                        step === 1 ? (/[A-Z0-9]/.test(char) ? 1 : 0.3) : 1, // Dim non-alphanumeric characters only in step 1
+                        step === 1 ? (/[A-Z0-9,]/.test(char) ? 1 : 0.3) :  1, // Dim non-alphanumeric characters only in step 1
                     }}
                   >
                     {char}
@@ -1371,7 +1371,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
               <div
                 style={{
                   position: 'absolute',
-                  left: '660px',
+                  left: '700px',
                   top: '150px',
                   zIndex: 201, // Above the letters
                 }}
