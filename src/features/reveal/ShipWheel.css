@@ -9,13 +9,16 @@
   background: rgba(188, 161, 88, 0.2); /* Aged brass with transparency */
   border-radius: 15px;
   border: 2px solid #bca158; /* Aged brass border */
+ height: 336px; /* Original height 256px + 80px */
+  position: relative;
 }
 
 .ship-wheel-left {
   flex: 1;
   display: flex;
-  justify-content: center;
+ justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .ship-wheel-right {
@@ -68,9 +71,9 @@
 
 .ship-wheel {
   width: 256px;
-  height: 256px;
+ height: 256px;
  cursor: grab;
-  transition: transform 0.1s ease;
+ transition: transform 0.1s ease;
   border: 2px solid #bca158; /* Aged brass border */
   border-radius: 50%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -81,6 +84,62 @@
   -ms-user-select: none; /* Disable text selection for IE/Edge */
   user-select: none; /* Disable text selection */
   pointer-events: auto; /* Allow pointer events for the wheel interaction */
+  position: relative;
+}
+
+/* Circle indicators around the wheel */
+.north-circle, .south-circle, .east-circle, .west-circle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: black; /* Distinct black circles */
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.north-circle {
+  top: calc(50% - 160px); /* Adjusted position to be 150px from center of wheel */
+  left: calc(50% - 10px);
+}
+
+.south-circle {
+  top: calc(50% + 140px); /* Adjusted position to be 150px from center of wheel */
+ left: calc(50% - 10px);
+}
+
+.east-circle {
+  top: calc(50% - 10px);
+  left: calc(50% + 146px); /* Adjusted position to be 150px from center of wheel */
+}
+
+.west-circle {
+  top: calc(50% - 10px);
+  left: calc(50% - 166px); /* Adjusted position to be 150px from center of wheel */
+}
+
+/* Apply the same color logic to the circles */
+.south-circle.position-reached {
+  background: #4caf50; /* Green when target reached */
+}
+
+.south-circle.position-not-reached {
+  background: #d32f2f; /* Red when in step 0 but target not reached */
+}
+
+.east-circle.position-reached {
+  background: #4caf50; /* Green when target reached */
+}
+
+.east-circle.position-not-reached {
+  background: #d32f2f; /* Red when in step 1 but target not reached */
+}
+
+.west-circle.position-reached {
+  background: #4caf50; /* Green when target reached */
+}
+
+.west-circle.position-not-reached {
+  background: #d32f2f; /* Red when in step 2 but target not reached */
 }
 
 .ship-wheel:active {

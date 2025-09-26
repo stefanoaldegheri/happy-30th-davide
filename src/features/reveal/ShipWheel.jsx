@@ -266,77 +266,91 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
   };
   
   // Add event listeners
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove, { passive: false });
-      window.addEventListener('mouseup', handleMouseUp);
-      window.addEventListener('touchmove', handleTouchMove, { passive: false });
-      window.addEventListener('touchend', handleTouchEnd, { passive: false });
-    }
+    useEffect(() => {
+      if (isDragging) {
+        window.addEventListener('mousemove', handleMouseMove, { passive: false });
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: false });
+      }
+      
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('touchend', handleTouchEnd);
+      }
+    }, [isDragging, lastPosition, rotation, targetAngle, step, onPoneglyphAlignment]);
     
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-    }
-  }, [isDragging, lastPosition, rotation, targetAngle, step, onPoneglyphAlignment]);
-  
-  // Get instruction based on current step - updated to match new transition sequence
-  const getInstruction = () => {
-    switch (step) {
-      case 0:
-        return "Step 1: Heave 'er 'round to 180°, me hearties!";
-      case 1:
-        return "Step 2: A sharp turn to 90° to clear the decks!";
-      case 2:
-        return "Step 3: Swing 'er about to 270° and give the cargo some sea room!";
-      case 3:
-        return "Step 4: Set a new course for 180° to plot our next move!";
-      case 4:
-        return "Step 5: Line up the ancient runes to make sense o' this map!";
-      case 5:
-        return "Step 6: Now, bring the wheel beyond the horizon and behold the treasure!";
-      case 6:
-        return "Step 7: TREASURE FOUND! Yo ho ho, ye bilge rats! We're rich!";
-      default:
-        return "Rotate wheel to target position";
-    }
-  };
-  
-  // Get target angle based on current step - updated to match new transition sequence
-  const getTargetAngle = () => {
-    switch (step) {
-      case 0:
-        return 180; // Heave 'er 'round to 180°, me hearties!
-      case 1:
-        return 90; // A sharp turn to 90° to clear the decks!
-      case 2:
-        return 270; // Swing 'er about to 270° and give the cargo some sea room!
-      case 3:
-        return 180; // Set a new course for 180° to plot our next move!
-      case 4:
-        return 30; // A wee nudge to 30° to decipher the ancient markings!
-      case 5:
-        return 355; // Now, bring the wheel to 355° and behold the treasure
-      case 6:
-        return 355; // Now, bring the wheel to 355° and behold the treasure
-      default:
-        return targetAngle;
-    }
-  };
-  
-  // Update target when step changes
-  useEffect(() => {
-    const newTarget = getTargetAngle();
-    if (newTarget !== targetAngle) {
-      // This would require a callback to update parent state, but we'll use the calculated one directly
-    }
-  }, [step, targetAngle]);
-  
-  return (
+    // Helper function to determine the class for the south circle
+    const getSouthCircleClass = () => {
+      if (step === 0) {
+        return Math.abs(rotation - 180) < 5 ? 'position-reached' : 'position-not-reached';
+      } else if (step === 3) {
+        return Math.abs(rotation - 180) < 5 ? 'position-reached' : 'position-not-reached';
+      }
+      return '';
+    };
+    
+    // Get instruction based on current step - updated to match new transition sequence
+    const getInstruction = () => {
+      switch (step) {
+        case 0:
+          return "Step 1: Heave 'er 'round to 180°, me hearties!";
+        case 1:
+          return "Step 2: A sharp turn to 90° to clear the decks!";
+        case 2:
+          return "Step 3: Swing 'er about to 270° and give the cargo some sea room!";
+        case 3:
+          return "Step 4: Set a new course for 180° to plot our next move!";
+        case 4:
+          return "Step 5: Line up the ancient runes to make sense o' this map!";
+        case 5:
+          return "Step 6: Now, bring the wheel beyond the horizon and behold the treasure!";
+        case 6:
+          return "Step 7: TREASURE FOUND! Yo ho ho, ye bilge rats! We're rich!";
+        default:
+          return "Rotate wheel to target position";
+      }
+    };
+    
+    // Get target angle based on current step - updated to match new transition sequence
+   const getTargetAngle = () => {
+      switch (step) {
+        case 0:
+          return 180; // Heave 'er 'round to 180°, me hearties!
+        case 1:
+          return 90; // A sharp turn to 90° to clear the decks!
+        case 2:
+          return 270; // Swing 'er about to 270° and give the cargo some sea room!
+        case 3:
+          return 180; // Set a new course for 180° to plot our next move!
+        case 4:
+          return 30; // A wee nudge to 30° to decipher the ancient markings!
+        case 5:
+          return 355; // Now, bring the wheel to 355° and behold the treasure
+        case 6:
+          return 355; // Now, bring the wheel to 355° and behold the treasure
+        default:
+          return targetAngle;
+      }
+    };
+    
+    // Update target when step changes
+    useEffect(() => {
+      const newTarget = getTargetAngle();
+      if (newTarget !== targetAngle) {
+        // This would require a callback to update parent state, but we'll use the calculated one directly
+      }
+    }, [step, targetAngle]);
+    
+    return (
     <div className="ship-wheel-container">
       <div className="ship-wheel-left">
+        <div className="north-circle"></div>
+        <div className={`south-circle ${getSouthCircleClass()}`}></div>
+        <div className={`east-circle ${step === 1 && Math.abs(rotation - 90) < 5 ? 'position-reached' : (step === 1 ? 'position-not-reached' : '')}`}></div>
+        <div className={`west-circle ${step === 2 && Math.abs(rotation - 270) < 5 ? 'position-reached' : (step === 2 ? 'position-not-reached' : '')}`}></div>
         <img
           ref={wheelRef}
           src="/images/ship_wheel_256.png"
@@ -347,14 +361,6 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           onTouchStart={handleTouchStart}
           onDragStart={handleDragStart}
         />
-        {/* Debug controls for testing */}
-        <div style={{ marginTop: '10px', fontSize: '12px' }}>
-          <button onClick={() => { setRotation(180); onRotationChange(180); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 180°</button>
-          <button onClick={() => { setRotation(90); onRotationChange(90); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 90°</button>
-          <button onClick={() => { setRotation(270); onRotationChange(270); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 270°</button>
-          <button onClick={() => { setRotation(30); onRotationChange(30); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 30°</button>
-          <button onClick={() => { setRotation(355); onRotationChange(355); }} style={{ fontSize: '10px', margin: '2px', padding: '2px' }}>To 355°</button>
-        </div>
       </div>
       <div className="ship-wheel-right">
         <div className="ship-wheel-instruction">
