@@ -15,7 +15,7 @@ const ChessPuzzle = () => {
     { white: 'Nxg3+', black: 'Kf4' },
     { white: 'Ne2+', black: 'Kf3' },
     { white: 'Nd4+', black: 'Kf4' },
-    { white: 'Bg3+' }
+    { white: 'Bg3+' },
   ];
   
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const ChessPuzzle = () => {
       const move = gameCopy.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: 'q' // Always promote to queen for simplicity
+        promotion: 'q', // Always promote to queen for simplicity
       });
       
       console.log('Move attempted:', move);
@@ -60,18 +60,15 @@ const ChessPuzzle = () => {
       // If move is valid, check if it matches the solution
       if (move.san === solution[solutionStep].white) {
         console.log('Correct move! Solution step:', solutionStep);
-        if (solutionStep === solution.length - 1)
-        {
-           setGame(new Chess(gameCopy.fen()));
-        }
-        else
-        {
-        // Correct move, now make the black response
-        gameCopy.move(solution[solutionStep].black);
-        console.log('Black response:', solution[solutionStep].black);
-        
-        // Update the game state
-        setGame(new Chess(gameCopy.fen()));
+        if (solutionStep === solution.length - 1) {
+          setGame(new Chess(gameCopy.fen()));
+        } else {
+          // Correct move, now make the black response
+          gameCopy.move(solution[solutionStep].black);
+          console.log('Black response:', solution[solutionStep].black);
+          
+          // Update the game state
+          setGame(new Chess(gameCopy.fen()));
         }
         // Check if we've reached the end of the solution
         if (solutionStep === solution.length - 1) {
@@ -107,7 +104,7 @@ const ChessPuzzle = () => {
         </h1>
         <div className="original-text">
           <p className="chess-instructions">
-            Solve this chess puzzle to continue your journey. You play as White.
+            <strong>Solve this puzzle to continue your journey. You play as White.</strong>
           </p>
         </div>
         
@@ -157,7 +154,7 @@ const ChessPuzzle = () => {
             }}
           >
             <h2 style={{ color: '#3e3224', fontFamily: 'Georgia, serif', marginTop: 0 }}>Congratulations!</h2>
-            <p style={{ color: '#3e3224', fontFamily: 'Georgia, serif' }}>You've solved the chess puzzle.</p>
+            <p style={{ color: '#3e3224', fontFamily: 'Georgia, serif' }}>{`You've solved the chess puzzle.`}</p>
             <button type="button" className="continue-button" onClick={handleContinue}>
               Continue to Next Challenge
             </button>

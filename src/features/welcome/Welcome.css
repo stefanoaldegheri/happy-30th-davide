@@ -107,42 +107,6 @@
   text-align: left;
 }
 
-/* Test Navigation Buttons */
-.test-navigation {
-  border-top: 1px solid #bca158; /* Aged brass border */
-  padding-top: 20px;
-  margin-top: 20px;
-  text-align: left;
-}
-
-.test-navigation h3 {
-  color: #3e3224 !important; /* Dark wood color */
-  font-weight: bold;
-  font-family: 'Georgia', serif;
-}
-
-.test-nav-button {
-  background: #e0d5c0 !important; /* Parchment color */
- border: 1px solid #bca158 !important; /* Aged brass border */
-  border-radius: 4px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 0.9rem;
- transition: all 0.2s ease;
-  font-family: 'Georgia', serif;
- color: #3e3224 !important; /* Dark wood text */
-}
-
-.test-nav-button:hover {
-  background: #d4c8b0 !important; /* Lighter parchment on hover */
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.test-nav-button:active {
-  transform: translateY(0);
-}
-
 @media (max-width: 768px) {
   .reveal-card {
     padding: 20px;
