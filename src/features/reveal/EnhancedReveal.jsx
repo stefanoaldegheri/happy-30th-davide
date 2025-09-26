@@ -946,8 +946,8 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
         ref={gridRef}
         style={{
           position: 'relative',
-          height: '240px',
-          width: '1140px',
+          height: '200px',
+          width: '1100px',
           overflow: 'visible' // Allow treasure boxes to be visible outside the grid
         }}
       >

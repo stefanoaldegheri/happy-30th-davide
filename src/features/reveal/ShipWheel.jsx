@@ -296,19 +296,19 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     const getInstruction = () => {
       switch (step) {
         case 0:
-          return "Step 1: Heave 'er 'round to 180°, me hearties!";
+          return "Heave 'er 'round to 180°, me hearties!";
         case 1:
-          return "Step 2: A sharp turn to 90° to clear the decks!";
+          return "A sharp turn to 90° to clear the decks!";
         case 2:
-          return "Step 3: Swing 'er about to 270° and give the cargo some sea room!";
+          return "Swing 'er about to 270° and give the cargo some sea room!";
         case 3:
-          return "Step 4: Set a new course for 180° to plot our next move!";
+          return "Set a new course for 180° to plot our next move!";
         case 4:
-          return "Step 5: Line up the ancient runes to make sense o' this map!";
+          return "Line up the ancient runes to make sense o' this map!";
         case 5:
-          return "Step 6: Now, bring the wheel beyond the horizon and behold the treasure!";
+          return "Now, bring the wheel beyond the horizon and behold the treasure!";
         case 6:
-          return "Step 7: TREASURE FOUND! Yo ho ho, ye bilge rats! We're rich!";
+          return "TREASURE FOUND! Yo ho ho, ye bilge rats! We're rich!";
         default:
           return "Rotate wheel to target position";
       }
@@ -368,7 +368,7 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
         </div>
         <div className="ship-wheel-right">
           <div className="ship-wheel-instruction">
-            <h3>Instruction:</h3>
+            <h3>Next Mission:</h3>
             <p>{getInstruction()}</p>
           </div>
         </div>

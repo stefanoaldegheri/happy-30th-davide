@@ -9,7 +9,7 @@
   background: rgba(188, 161, 88, 0.2); /* Aged brass with transparency */
   border-radius: 15px;
   border: 2px solid #bca158; /* Aged brass border */
- height: 336px; /* Original height 256px + 80px */
+  height: 380px; /* Increased height to accommodate bigger instruction area */
   position: relative;
 }
 
@@ -27,26 +27,35 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 20px;
+  padding: 30px; /* Bigger padding */
   color: #3e3224; /* Dark wood text color */
   background: rgba(245, 233, 211, 0.3); /* Off-white parchment with transparency */
   border-radius: 10px;
   border: 1px solid #bca158; /* Aged brass border */
+ min-height: 180px; /* Make it bigger */
+  text-align: left; /* Ensure content is left-aligned */
 }
 
 .ship-wheel-instruction h3 {
   margin-top: 0;
   margin-bottom: 10px;
-  font-size: 1.5rem;
+  font-size: 1.8rem; /* Bigger text */
   color: #bca158; /* Aged brass color */
   font-family: 'Georgia', serif;
+  font-weight: bold; /* Bold text */
+  margin-left: 0; /* Align left */
+  text-align: left; /* Align left */
 }
 
 .ship-wheel-instruction p {
   margin: 0;
-  font-size: 1.2rem;
-  line-height: 1.5;
+  font-size: 1.4rem; /* Bigger text */
+  line-height: 1.6;
   font-family: 'Georgia', serif;
+  font-weight: bold; /* Bold text */
+  padding: 15px; /* Bigger container */
+  margin-left: 0; /* Align left with the heading */
+  text-align: left; /* Align left */
 }
 
 .ship-wheel-position {
