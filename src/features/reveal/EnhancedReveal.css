@@ -1,11 +1,11 @@
 .enhanced-reveal-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Changed from center to top */
   min-height: 100vh;
   padding: 20px;
   background: #4a3c2c; /* Dark wood background */
-  background-image: 
+  background-image:
     radial-gradient(#5a4a3a 1px, transparent 1px),
     radial-gradient(#5a4a3a 1px, transparent 1px);
   background-size: 40px 40px;
@@ -26,7 +26,7 @@
 .reveal-card {
   background: #f5e9d3; /* Off-white parchment background */
   border-radius: 10px;
-  box-shadow: 
+  box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.5),
     inset 0 0 20px rgba(0, 0, 0, 0.2);
   padding: 40px;
