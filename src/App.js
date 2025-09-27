@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Welcome from './features/welcome/Welcome';
 import ChessPuzzle from './features/chess/ChessPuzzle';
 import RevealModule from './features/reveal/RevealModule';
