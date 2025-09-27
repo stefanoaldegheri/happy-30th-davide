@@ -347,6 +347,12 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
     
     return (
       <div className="ship-wheel-container">
+                <div className="ship-wheel-right">
+          <div className="ship-wheel-instruction">
+            <h3>Next Mission:</h3>
+            <p>{getInstruction()}</p>
+          </div>
+        </div>
         <div className="ship-wheel-left">
           <div className="north-circle"></div>
           <div className="northeast-circle"></div>
@@ -366,12 +372,6 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
             onTouchStart={handleTouchStart}
             onDragStart={handleDragStart}
           />
-        </div>
-        <div className="ship-wheel-right">
-          <div className="ship-wheel-instruction">
-            <h3>Next Mission:</h3>
-            <p>{getInstruction()}</p>
-          </div>
         </div>
       </div>
     );
