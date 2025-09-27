@@ -1,6 +1,10 @@
-# Interactive Gift Application
+# Happy 30th Birthday Gift Application
 
-This is a standalone version of the Interactive Gift Application. You can run this application by simply opening the `index.html` file in your web browser.
+This is an interactive birthday gift application for Davide. You can run this application by simply opening the `index.html` file in your web browser or visiting the [GitHub Pages site](https://stefanoaldegheri.github.io/happy-30th-davide/).
+
+## GitHub Pages
+
+The site is published at: https://stefanoaldegheri.github.io/happy-30th-davide/
 
 ## How to Use
 
@@ -27,3 +31,4 @@ The application includes:
 - `index.html` - Main HTML file
 - `main.*.js` - Application JavaScript code
 - `images/` - Image assets used in the application
+- `.nojekyll` - Configuration file to prevent Jekyll processing on GitHub Pages
