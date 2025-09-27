@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import ShipWheel from './ShipWheel';
+import { poneglyphBase64, treasureBoxBase64 } from '../../lib/embeddedImages';
 import './EnhancedReveal.css';
 
 // Chess position data from the provided JSON
@@ -753,10 +754,10 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
     handlePoneglyphAlignment(rotation);
     // If rotation is close to 355° (within 5°), show poneglyph
     if (Math.abs(rotation - 355) < 5 && step < 6) {
-      setCurrentPoneglyph('/images/poneglyph_256.png');
+      setCurrentPoneglyph(poneglyphBase64);
     }
     // Once poneglyph is shown, it stays visible
-  };
+    };
 
   // Handle wheel rotation changes
  const handleWheelRotation = (angle) => {
@@ -954,7 +955,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: Math.ceil(maxCols/2) -1 }).map((_, colIndex) => (
          <img
            key={`top-tbox-${colIndex}`}
-           src={step >= 3 && colIndex === 6 ? "/images/poneglyph_256.png" : "/images/treasure_box_256.png"}
+           src={step >= 3 && colIndex === 6 ? poneglyphBase64 : treasureBoxBase64}
            alt={step >= 3 && colIndex === 6 ? "Poneglyph" : "Treasure Box"}
            style={{
              position: 'absolute',
@@ -971,7 +972,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: Math.ceil(maxCols/2) -1 }).map((_, colIndex) => (
          <img
            key={`bottom-tbox-${colIndex}`}
-           src={step >= 4 && colIndex === 6 ? '/images/poneglyph_256.png' : '/images/treasure_box_256.png'}
+           src={step >= 4 && colIndex === 6 ? poneglyphBase64 : treasureBoxBase64}
            alt={step >= 4 && colIndex === 6 ? 'Poneglyph' : 'Treasure Box'}
            style={{
              position: 'absolute',
@@ -988,7 +989,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: 6 }).map((_, rowIndex) => (
          <img
            key={`left-tbox-${rowIndex}`}
-           src={step >= 1 && rowIndex === 2 ? '/images/poneglyph_256.png' : '/images/treasure_box_256.png'}
+           src={step >= 1 && rowIndex === 2 ? poneglyphBase64 : treasureBoxBase64}
            alt={step >= 1 && rowIndex === 2 ? 'Poneglyph' : 'Treasure Box'}
            style={{
              position: 'absolute',
@@ -1005,7 +1006,7 @@ I HOPE YOUR 30S ARE LEGENDARY!`;
        {Array.from({ length: 6 }).map((_, rowIndex) => (
          <img
            key={`right-tbox-${rowIndex}`}
-           src={step >= 2 && rowIndex === 2 ? '/images/poneglyph_256.png' : '/images/treasure_box_256.png'}
+           src={step >= 2 && rowIndex === 2 ? poneglyphBase64 : treasureBoxBase64}
            alt={step >= 2 && rowIndex === 2 ? 'Poneglyph' : 'Treasure Box'}
            style={{
              position: 'absolute',

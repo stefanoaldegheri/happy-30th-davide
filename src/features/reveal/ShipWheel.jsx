@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { shipWheelBase64 } from '../../lib/embeddedImages';
 import './ShipWheel.css';
 
 const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }) => {
@@ -357,7 +358,7 @@ const ShipWheel = ({ onRotationChange, targetAngle, step, onPoneglyphAlignment }
           <div className="northwest-circle"></div>
           <img
             ref={wheelRef}
-            src="/images/ship_wheel_256.png"
+            src={shipWheelBase64}
             alt="Ship Wheel"
             className="ship-wheel"
             style={{ transform: `rotate(${rotation}deg)` }}
